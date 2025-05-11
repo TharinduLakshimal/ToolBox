@@ -37,6 +37,8 @@ const Header = () => {
         <a href="/tool" style={styles.link}>Tools</a>
         <a href="/about" style={styles.link}>About</a>
         <a href="/contact" style={styles.link}>Contact</a>
+        <a href="/login" style={styles.link}>Login</a>
+        <a href="/register" style={styles.link}>Register</a>
       </nav>
     </header>
   );

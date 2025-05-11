@@ -6,6 +6,8 @@ import Home from './pages/home';
 import Tools from './pages/tools'; // Make sure Tools.js exists in /pages
 import About from './pages/aboutus';
 import Contact from './pages/contact';
+import Login from './pages/login';
+import Register from './pages/register';
 
 function App() {
   return (
@@ -18,6 +20,8 @@ function App() {
             <Route path="/tool" element={<Tools />} />
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} /> 
+            <Route path="/login" element={<Login />} /> 
+            <Route path="/register" element={<Register />} /> 
             {/* Add more routes as needed */}
           </Routes>
         </div>

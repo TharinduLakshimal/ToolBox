@@ -9,24 +9,29 @@ function Register() {
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
   const [role, setRole] = useState('user');
+  const [errorMessage, setErrorMessage] = useState('');  // To handle error message
 
   const navigate = useNavigate();
 
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:8080/api/auth/register', {
+      // Send the registration request to backend
+      const response = await axios.post('http://localhost:8080/api/auth/register', {
         name,
         email,
-        password,
+        passwordHash: password,
         phone,
         address,
-        role,
+        role: role.toUpperCase(),
       });
+
+      // If registration is successful, navigate to login page
       alert('Registration successful!');
       navigate('/login');
     } catch (err) {
-      alert('Registration failed: ' + (err.response?.data?.message || err.message));
+      // Handle errors, set error message to display to the user
+      setErrorMessage(err.response?.data?.message || 'Registration failed');
     }
   };
 
@@ -70,12 +75,15 @@ function Register() {
           onChange={(e) => setAddress(e.target.value)}
         />
         <select value={role} onChange={(e) => setRole(e.target.value)} required>
-          <option value="user">User</option>
-          <option value="admin">Admin</option>
-          <option value="owner">Tool Owner</option>
+          <option value="USER">User</option>
+          <option value="ADMIN">Admin</option>
+          <option value="OWNER">Tool Owner</option>
         </select>
         <button type="submit">Register</button>
       </form>
+
+      {/* Display error message if registration fails */}
+      {errorMessage && <div className="error-message">{errorMessage}</div>}
 
       <style>{`
         .register-page {
@@ -130,6 +138,12 @@ function Register() {
 
         .register-page button:hover {
           background: #1e8449;
+        }
+
+        .error-message {
+          color: #e74c3c;
+          font-size: 1rem;
+          margin-top: 15px;
         }
       `}</style>
     </div>

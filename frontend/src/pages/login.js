@@ -1,14 +1,19 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false); // Loading state for button
+  const [errorMessage, setErrorMessage] = useState(''); // To display error messages
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setErrorMessage(''); // Reset error message before new request
+
     try {
       const res = await axios.post('http://localhost:8080/api/auth/login', {
         email,
@@ -16,9 +21,10 @@ function Login() {
       });
       localStorage.setItem('token', res.data.token);
       alert('Login successful!');
-      navigate('/');
+      navigate('/home');
     } catch (err) {
-      alert('Login failed: ' + (err.response?.data?.message || err.message));
+      setErrorMessage(err.response?.data?.message || 'Login failed');
+      setLoading(false);
     }
   };
 
@@ -40,8 +46,18 @@ function Login() {
           required
           onChange={(e) => setPassword(e.target.value)}
         />
-        <button type="submit">Login</button>
+        <button type="submit" disabled={loading}>
+          {loading ? 'Logging in...' : 'Login'}
+        </button>
       </form>
+
+      {/* Display error message if login fails */}
+      {errorMessage && <div className="error-message">{errorMessage}</div>}
+
+      {/* Register Link */}
+      <p style={{ marginTop: '15px' }}>
+        Don't have an account? <Link to="/register">Register</Link>
+      </p>
 
       <style>{`
         .login-page {
@@ -94,6 +110,21 @@ function Login() {
 
         .login-page button:hover {
           background-color: #005f75;
+        }
+
+        .login-page a {
+          color: #008cba;
+          text-decoration: none;
+        }
+
+        .login-page a:hover {
+          text-decoration: underline;
+        }
+
+        .error-message {
+          color: #e74c3c;
+          font-size: 1rem;
+          margin-top: 15px;
         }
       `}</style>
     </div>
