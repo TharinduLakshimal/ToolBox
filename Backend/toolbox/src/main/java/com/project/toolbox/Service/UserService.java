@@ -17,12 +17,16 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    // Register a new user with encoded password
     public User registerUser(User user) {
-        user.setPasswordHash(passwordEncoder.encode(user.getPasswordHash()));
+        String rawPassword = user.getPassword(); // Get plain password
+        String encodedPassword = passwordEncoder.encode(rawPassword); // Encode it
+        user.setPasswordHash(encodedPassword); // Store encoded password in DB
         user.setCreatedAt(LocalDateTime.now());
         return userRepository.save(user);
     }
 
+    // Authenticate user by checking raw password against stored hash
     public User authenticate(String email, String rawPassword) {
         return userRepository.findByEmail(email)
                 .filter(user -> passwordEncoder.matches(rawPassword, user.getPasswordHash()))

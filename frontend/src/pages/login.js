@@ -21,7 +21,7 @@ function Login() {
       });
       localStorage.setItem('token', res.data.token);
       alert('Login successful!');
-      navigate('/home');
+      navigate('/');
     } catch (err) {
       setErrorMessage(err.response?.data?.message || 'Login failed');
       setLoading(false);

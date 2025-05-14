@@ -18,12 +18,15 @@ public class User {
 
     private String passwordHash;
 
+    @Transient // Not saved in DB
+    private String password;
+
     private String phone;
 
     private String address;
 
     @Enumerated(EnumType.STRING)
-    private Role role; //USER, ADMIN
+    private Role role; // USER, ADMIN
 
     private LocalDateTime createdAt;
 
@@ -55,6 +58,14 @@ public class User {
 
     public void setPasswordHash(String passwordHash) {
         this.passwordHash = passwordHash;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getPhone() {

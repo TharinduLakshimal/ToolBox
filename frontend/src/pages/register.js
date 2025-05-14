@@ -20,7 +20,7 @@ function Register() {
       const response = await axios.post('http://localhost:8080/api/auth/register', {
         name,
         email,
-        passwordHash: password,
+        password,
         phone,
         address,
         role: role.toUpperCase(),
