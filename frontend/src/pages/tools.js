@@ -1,19 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const Tool = () => {
   const [tools, setTools] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     axios.get('http://localhost:8080/api/tools/getTools')
       .then(response => {
-        console.log(response);
         setTools(response.data);
       })
       .catch(error => {
         console.error("Error fetching tools:", error);
       });
   }, []);
+
+  const handleRentClick = (id) => {
+    navigate(`/rent/${id}`);
+  };
 
   return (
     <div style={{ padding: '20px' }}>
@@ -36,7 +41,7 @@ const Tool = () => {
             />
             <h2>{tool.name}</h2>
             <p>Rs. {tool.pricePerDay}/day</p>
-            <button style={{ padding: '10px', backgroundColor: '#282c34', color: 'white', border: 'none', borderRadius: '4px' }}>
+            <button onClick={() => handleRentClick(tool.id)} style={{ padding: '10px', backgroundColor: '#282c34', color: 'white', border: 'none', borderRadius: '4px' }}>
               Rent Now
             </button>
           </div>

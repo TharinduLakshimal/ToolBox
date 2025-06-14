@@ -8,6 +8,7 @@ import About from './pages/aboutus';
 import Contact from './pages/contact';
 import Login from './pages/login';
 import Register from './pages/register';
+import Rent from './pages/Rent';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
             <Route path="/contact" element={<Contact />} /> 
             <Route path="/login" element={<Login />} /> 
             <Route path="/register" element={<Register />} /> 
+            <Route path="/rent/:id" element={<Rent />} />
             {/* Add more routes as needed */}
           </Routes>
         </div>
