@@ -2,7 +2,6 @@ package com.project.toolbox.Controller;
 
 import com.project.toolbox.Model.Tool;
 import com.project.toolbox.Service.ToolServiceImpl;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,5 +29,10 @@ public class ToolController {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @GetMapping("/search")
+    public List<Tool> searchTools(@RequestParam String keyword) {
+        return toolService.searchTools(keyword);
     }
 }

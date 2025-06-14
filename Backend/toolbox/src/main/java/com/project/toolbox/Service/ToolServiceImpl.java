@@ -15,12 +15,16 @@ public class ToolServiceImpl implements ToolService {
 
     @Override
     public List<Tool> getAllTools() {
-        System.out.println("done");
         return toolRepository.findAll();
     }
 
     @Override
     public Tool getToolById(Long id) {
         return toolRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public List<Tool> searchTools(String keyword) {
+        return toolRepository.findByNameContainingIgnoreCase(keyword);
     }
 }
