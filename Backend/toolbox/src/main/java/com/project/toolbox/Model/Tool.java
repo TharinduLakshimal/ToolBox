@@ -26,6 +26,10 @@ private BigDecimal pricePerWeek;
 private Integer quantity; 
 private Boolean isAvailable; 
 private LocalDateTime createdAt;
+
+public Tool() {
+}
+
 public Tool(Long id, String name, String category, String description, String imageUrl, BigDecimal pricePerDay,
         BigDecimal pricePerWeek, Integer quantity, Boolean isAvailable, LocalDateTime createdAt) {
     this.id = id;
