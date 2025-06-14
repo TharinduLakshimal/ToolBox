@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-ToolboxApplication<toolbox>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.project.toolbox.ToolboxApplication",
+            "projectName": "toolbox",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
