@@ -35,7 +35,8 @@ public class Rental {
 
     private LocalDateTime createdAt;
 
-    
+    public Rental() {
+} 
     public Rental(Long id, User user, Tool tool, LocalDate startDate, LocalDate endDate, BigDecimal totalAmount,
             RentalStatus status, LocalDateTime createdAt) {
         this.id = id;

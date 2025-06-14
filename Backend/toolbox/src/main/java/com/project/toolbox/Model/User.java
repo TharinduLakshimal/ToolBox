@@ -30,6 +30,9 @@ public class User {
 
     private LocalDateTime createdAt;
 
+    public User(){
+        
+    }
     // --- Getters and Setters ---
 
     public Long getId() {
