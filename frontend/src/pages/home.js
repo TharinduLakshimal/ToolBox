@@ -1,26 +1,28 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom'; // ⬅️ Import navigation hook
+import { useNavigate } from 'react-router-dom';
 
 const Home = () => {
   const [tools, setTools] = useState([]);
   const [filteredTools, setFilteredTools] = useState([]);
   const [current, setCurrent] = useState(0);
   const [search, setSearch] = useState('');
-  const navigate = useNavigate(); // ⬅️ Use navigation
+  const navigate = useNavigate();
 
   // Fetch all tools on first load
   useEffect(() => {
     fetchAllTools();
   }, []);
 
-  // Auto slider
+  // Auto slider (only active when there's no search input)
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrent((prev) => (prev + 1) % filteredTools.length);
-    }, 3000);
-    return () => clearInterval(interval);
-  }, [filteredTools]);
+    if (search.trim() === '' && filteredTools.length > 0) {
+      const interval = setInterval(() => {
+        setCurrent((prev) => (prev + 1) % filteredTools.length);
+      }, 3000);
+      return () => clearInterval(interval);
+    }
+  }, [filteredTools, search]);
 
   const fetchAllTools = async () => {
     try {
@@ -48,7 +50,6 @@ const Home = () => {
     }
   };
 
-  // Handle "Rent Now" button
   const handleRentClick = (id) => {
     navigate(`/rent/${id}`);
   };
@@ -74,8 +75,8 @@ const Home = () => {
         />
       </div>
 
-      {/* Slider Banner */}
-      {filteredTools.length > 0 && (
+      {/* Slider Banner - Only visible when search is empty */}
+      {search.trim() === '' && filteredTools.length > 0 && (
         <div style={{ margin: '20px 0', textAlign: 'center' }}>
           <img
             src={filteredTools[current]?.imageUrl}
@@ -86,8 +87,8 @@ const Home = () => {
         </div>
       )}
 
-      {/* Horizontal Tool List */}
-      <h3>Rent Tools</h3>
+      {/* Tool List */}
+      <h3>{search.trim() === '' ? 'Rent Tools' : 'Search Results'}</h3>
       <div
         style={{
           display: 'flex',
@@ -95,41 +96,45 @@ const Home = () => {
           padding: '10px 0',
         }}
       >
-        {filteredTools.map(tool => (
-          <div
-            key={tool.id}
-            style={{
-              minWidth: '200px',
-              marginRight: '15px',
-              background: '#f5f5f5',
-              padding: '10px',
-              borderRadius: '10px',
-              textAlign: 'center',
-              boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
-            }}
-          >
-            <img
-              src={tool.imageUrl}
-              alt={tool.name}
-              style={{ width: '100%', height: '100px', objectFit: 'cover', borderRadius: '5px' }}
-            />
-            <p style={{ marginTop: '10px', fontWeight: 'bold' }}>{tool.name}</p>
-            <button
-              onClick={() => handleRentClick(tool.id)}
+        {filteredTools.length > 0 ? (
+          filteredTools.map(tool => (
+            <div
+              key={tool.id}
               style={{
+                minWidth: '200px',
+                marginRight: '15px',
+                background: '#f5f5f5',
                 padding: '10px',
-                backgroundColor: '#282c34',
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                marginTop: '10px',
-                cursor: 'pointer'
+                borderRadius: '10px',
+                textAlign: 'center',
+                boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
               }}
             >
-              Rent Now
-            </button>
-          </div>
-        ))}
+              <img
+                src={tool.imageUrl}
+                alt={tool.name}
+                style={{ width: '100%', height: '100px', objectFit: 'cover', borderRadius: '5px' }}
+              />
+              <p style={{ marginTop: '10px', fontWeight: 'bold' }}>{tool.name}</p>
+              <button
+                onClick={() => handleRentClick(tool.id)}
+                style={{
+                  padding: '10px',
+                  backgroundColor: '#282c34',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '4px',
+                  marginTop: '10px',
+                  cursor: 'pointer'
+                }}
+              >
+                Rent Now
+              </button>
+            </div>
+          ))
+        ) : (
+          <p style={{ paddingLeft: '10px' }}>No tools found.</p>
+        )}
       </div>
     </div>
   );
