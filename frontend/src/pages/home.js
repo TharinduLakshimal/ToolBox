@@ -7,14 +7,14 @@ const Home = () => {
   const [filteredTools, setFilteredTools] = useState([]);
   const [current, setCurrent] = useState(0);
   const [search, setSearch] = useState('');
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
 
-  // Fetch all tools on first load
   useEffect(() => {
     fetchAllTools();
+    checkLoginStatus();
   }, []);
 
-  // Auto slider (only active when there's no search input)
   useEffect(() => {
     if (search.trim() === '' && filteredTools.length > 0) {
       const interval = setInterval(() => {
@@ -23,6 +23,11 @@ const Home = () => {
       return () => clearInterval(interval);
     }
   }, [filteredTools, search]);
+
+  const checkLoginStatus = () => {
+    const token = localStorage.getItem('token');
+    setIsLoggedIn(!!token);
+  };
 
   const fetchAllTools = async () => {
     try {
@@ -51,13 +56,16 @@ const Home = () => {
   };
 
   const handleRentClick = (id) => {
-    navigate(`/rent/${id}`);
+    if (!isLoggedIn) {
+      alert('Please log in to rent tools.');
+      navigate('/login');
+    } else {
+      navigate(`/rent/${id}`);
+    }
   };
 
   return (
     <div style={{ padding: '20px' }}>
-      <h1>Welcome to ToolBox</h1>
-
       {/* Search Bar */}
       <div style={{ marginBottom: '20px', textAlign: 'center' }}>
         <input
@@ -75,7 +83,7 @@ const Home = () => {
         />
       </div>
 
-      {/* Slider Banner - Only visible when search is empty */}
+      {/* Slider Banner */}
       {search.trim() === '' && filteredTools.length > 0 && (
         <div style={{ margin: '20px 0', textAlign: 'center' }}>
           <img
@@ -89,15 +97,9 @@ const Home = () => {
 
       {/* Tool List */}
       <h3>{search.trim() === '' ? 'Rent Tools' : 'Search Results'}</h3>
-      <div
-        style={{
-          display: 'flex',
-          overflowX: 'auto',
-          padding: '10px 0',
-        }}
-      >
+      <div style={{ display: 'flex', overflowX: 'auto', padding: '10px 0' }}>
         {filteredTools.length > 0 ? (
-          filteredTools.map(tool => (
+          filteredTools.map((tool) => (
             <div
               key={tool.id}
               style={{
@@ -125,7 +127,7 @@ const Home = () => {
                   border: 'none',
                   borderRadius: '4px',
                   marginTop: '10px',
-                  cursor: 'pointer'
+                  cursor: 'pointer',
                 }}
               >
                 Rent Now

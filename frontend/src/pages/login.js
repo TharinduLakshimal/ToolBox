@@ -5,25 +5,31 @@ import { useNavigate, Link } from 'react-router-dom';
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false); // Loading state for button
-  const [errorMessage, setErrorMessage] = useState(''); // To display error messages
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setErrorMessage(''); // Reset error message before new request
+    setErrorMessage('');
 
     try {
       const res = await axios.post('http://localhost:8080/api/auth/login', {
         email,
         password,
       });
-      localStorage.setItem('token', res.data.token);
-      alert('Login successful!');
-      navigate('/');
+
+      if (res.data.token) {
+        localStorage.setItem('token', res.data.token);
+        alert('Login successful!');
+        navigate('/');
+      } else {
+        setErrorMessage('Login failed: No token received');
+      }
     } catch (err) {
       setErrorMessage(err.response?.data?.message || 'Login failed');
+    } finally {
       setLoading(false);
     }
   };
@@ -51,10 +57,8 @@ function Login() {
         </button>
       </form>
 
-      {/* Display error message if login fails */}
       {errorMessage && <div className="error-message">{errorMessage}</div>}
 
-      {/* Register Link */}
       <p style={{ marginTop: '15px' }}>
         Don't have an account? <Link to="/register">Register</Link>
       </p>
