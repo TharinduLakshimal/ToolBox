@@ -7,6 +7,7 @@ const Rent = () => {
   const [tool, setTool] = useState(null);
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
+  const [quantity, setQuantity] = useState(1);
   const [totalPrice, setTotalPrice] = useState(0);
   const [loading, setLoading] = useState(false);
 
@@ -24,23 +25,27 @@ const Rent = () => {
   }, [id]);
 
   useEffect(() => {
-    if (tool && fromDate && toDate && new Date(toDate) >= new Date(fromDate)) {
+    if (tool && fromDate && toDate && new Date(toDate) >= new Date(fromDate) && quantity > 0) {
       const start = new Date(fromDate);
       const end = new Date(toDate);
       const days = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
-      setTotalPrice(days * tool.pricePerDay);
+      setTotalPrice(days * tool.pricePerDay * quantity);
     } else {
       setTotalPrice(0);
     }
-  }, [fromDate, toDate, tool]);
+  }, [fromDate, toDate, tool, quantity]);
 
   const handleConfirm = async () => {
-    if (!fromDate || !toDate) {
-      alert('❗ Please select both From and To dates.');
+    if (!fromDate || !toDate || !quantity) {
+      alert('❗ Please fill all fields.');
       return;
     }
     if (new Date(toDate) < new Date(fromDate)) {
       alert('❗ To date cannot be earlier than From date.');
+      return;
+    }
+    if (quantity <= 0 || quantity > tool.quantity) {
+      alert(`❗ Quantity must be between 1 and ${tool.quantity}`);
       return;
     }
 
@@ -51,12 +56,14 @@ const Rent = () => {
         toolId: tool.id,
         startDate: fromDate,
         endDate: toDate,
-        amount: totalPrice
+        amount: totalPrice,
+        quantity: quantity
       });
 
       alert('✅ Rental successfully saved to database!');
       setFromDate('');
       setToDate('');
+      setQuantity(1);
     } catch (error) {
       console.error('Error:', error);
       alert('❌ Failed to rent tool.');
@@ -86,13 +93,25 @@ const Rent = () => {
           style={{ width: '100%', maxHeight: '250px', objectFit: 'contain', borderRadius: '8px' }}
         />
         <p><strong>Price per Day:</strong> Rs. {tool.pricePerDay}</p>
+        <p><strong>Available Quantity:</strong> {tool.quantity}</p>
         <p><strong>Total Price:</strong> Rs. {totalPrice}</p>
       </div>
       <div style={{ flex: '1' }}>
         <label>From Date:</label><br />
         <input type="date" value={fromDate} onChange={(e) => setFromDate(e.target.value)} /><br /><br />
+
         <label>To Date:</label><br />
         <input type="date" value={toDate} onChange={(e) => setToDate(e.target.value)} /><br /><br />
+
+        <label>Quantity:</label><br />
+        <input
+          type="number"
+          min="1"
+          max={tool.quantity}
+          value={quantity}
+          onChange={(e) => setQuantity(Number(e.target.value))}
+        /><br /><br />
+
         <button
           onClick={handleConfirm}
           disabled={loading}

@@ -4,18 +4,12 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "rentals")
 public class Rental {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -35,10 +29,13 @@ public class Rental {
 
     private LocalDateTime createdAt;
 
+    private Integer quantity; // ➕ New field to store rented quantity
+
     public Rental() {
-} 
-    public Rental(Long id, User user, Tool tool, LocalDate startDate, LocalDate endDate, BigDecimal totalAmount,
-            RentalStatus status, LocalDateTime createdAt) {
+    }
+
+    public Rental(Long id, User user, Tool tool, LocalDate startDate, LocalDate endDate,
+                  BigDecimal totalAmount, RentalStatus status, LocalDateTime createdAt, Integer quantity) {
         this.id = id;
         this.user = user;
         this.tool = tool;
@@ -47,7 +44,20 @@ public class Rental {
         this.totalAmount = totalAmount;
         this.status = status;
         this.createdAt = createdAt;
+        this.quantity = quantity; // Default quantity to 1, can be set later
     }
+    
+
+    // 🔽 Add getter & setter for quantity
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
+    }
+
+    // Getters & setters for other fields
 
     public Long getId() {
         return id;
@@ -112,6 +122,4 @@ public class Rental {
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
-
-    
 }

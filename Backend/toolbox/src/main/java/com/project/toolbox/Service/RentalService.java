@@ -24,15 +24,42 @@ public class RentalService {
     @Autowired
     private ToolRepository toolRepository;
 
-    public void createRental(RentalRequest request) {
-        Rental rental = new Rental(null, null, null, null, null, null, null, null);
-        rental.setUser(userRepository.findById(request.userId).orElseThrow());
-        rental.setTool(toolRepository.findById(request.toolId).orElseThrow());
+    public Tool createRental(RentalRequest request) {
+        Rental rental = new Rental(null, null, null, null, null, null, null, null, null);
+
+        User user = userRepository.findById(request.userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Tool tool = toolRepository.findById(request.toolId)
+                .orElseThrow(() -> new RuntimeException("Tool not found"));
+
+        // 🔽 Check if the tool is available
+        if (tool.getQuantity() < request.quantity || !tool.getIsAvailable()) {
+            throw new RuntimeException("Tool not available or insufficient quantity");
+        }
+
+        // 🔽 Reduce quantity
+        int updatedQty = tool.getQuantity() - request.quantity;
+        tool.setQuantity(updatedQty);
+
+        // 🔽 Set availability to false if quantity becomes zero
+        if (updatedQty == 0) {
+            tool.setIsAvailable(false);
+        }
+
+        toolRepository.save(tool); // ✅ Save updated tool
+
+        rental.setUser(user);
+        rental.setTool(tool);
         rental.setStartDate(LocalDate.parse(request.startDate));
         rental.setEndDate(LocalDate.parse(request.endDate));
         rental.setTotalAmount(BigDecimal.valueOf(request.amount));
         rental.setStatus(RentalStatus.CONFIRMED);
         rental.setCreatedAt(LocalDateTime.now());
-        rentalRepository.save(rental);
+        rental.setQuantity(request.quantity); // ✅ Save rented quantity
+
+        rentalRepository.save(rental); // ✅ Save rental
+
+        return tool; // Optional: return updated tool object if needed
     }
 }
