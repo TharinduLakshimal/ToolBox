@@ -89,7 +89,7 @@ const Home = () => {
           <img
             src={filteredTools[current]?.imageUrl}
             alt={filteredTools[current]?.name}
-            style={{ width: '400px', height: '200px', borderRadius: '10px', objectFit: 'cover' }}
+            style={{ width: '400px', height: '350px', borderRadius: '10px', objectFit: 'cover' }}
           />
           <h2 style={{ marginTop: '10px' }}>{filteredTools[current]?.name}</h2>
         </div>
@@ -104,7 +104,7 @@ const Home = () => {
               key={tool.id}
               style={{
                 minWidth: '200px',
-                marginRight: '15px',
+                marginRight: '50px',
                 background: '#f5f5f5',
                 padding: '10px',
                 borderRadius: '10px',
@@ -115,7 +115,7 @@ const Home = () => {
               <img
                 src={tool.imageUrl}
                 alt={tool.name}
-                style={{ width: '100%', height: '100px', objectFit: 'cover', borderRadius: '5px' }}
+                style={{ width: '100%', height: '170px', objectFit: 'cover', borderRadius: '5px' }}
               />
               <p style={{ marginTop: '10px', fontWeight: 'bold' }}>{tool.name}</p>
               <button
