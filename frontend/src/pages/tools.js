@@ -22,7 +22,7 @@ const Tool = () => {
 
   return (
     <div style={{ padding: '20px' }}>
-      <h1>Available Tools for Rent</h1>
+      <h1 style={{ fontSize: '2.5rem', marginBottom: '20px', textAlign: 'center' }}>Available Tools for Rent</h1>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px' }}>
         {tools.map((tool) => (
           <div
@@ -30,8 +30,8 @@ const Tool = () => {
             style={{
               border: '1px solid #ccc',
               borderRadius: '8px',
-              padding: '10px',
-              width: '300px',
+              padding: '21px',
+              width: '200px',
             }}
           >
             <img
