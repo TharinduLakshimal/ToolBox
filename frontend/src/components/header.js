@@ -3,18 +3,23 @@ import { useNavigate, Link, useLocation } from 'react-router-dom';
 
 const Header = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [role, setRole] = useState('');
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Check login status on location (route) change
+  // Check login status and user role when route changes
   useEffect(() => {
     const token = localStorage.getItem('token');
+    const storedRole = localStorage.getItem('role');
     setIsLoggedIn(!!token);
+    setRole(storedRole || '');
   }, [location]);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('role'); // Remove role on logout
     setIsLoggedIn(false);
+    setRole('');
     navigate('/login');
   };
 
@@ -64,15 +69,30 @@ const Header = () => {
         <Link to="/about" style={styles.link}>About</Link>
         <Link to="/contact" style={styles.link}>Contact</Link>
 
+        {/* Show Dashboard if user is admin */}
+        {role === 'ADMIN' && (
+          <button style={styles.button} onClick={() => navigate('/admin')}>
+            Dashboard
+          </button>
+        )}
+
         {isLoggedIn ? (
           <>
-            <button style={styles.button} onClick={() => navigate('/account')}>My Account</button>
-            <button style={styles.button} onClick={handleLogout}>Logout</button>
+            <button style={styles.button} onClick={() => navigate('/account')}>
+              My Account
+            </button>
+            <button style={styles.button} onClick={handleLogout}>
+              Logout
+            </button>
           </>
         ) : (
           <>
-            <button style={styles.button} onClick={() => navigate('/login')}>Login</button>
-            <button style={styles.button} onClick={() => navigate('/register')}>Register</button>
+            <button style={styles.button} onClick={() => navigate('/login')}>
+              Login
+            </button>
+            <button style={styles.button} onClick={() => navigate('/register')}>
+              Register
+            </button>
           </>
         )}
       </nav>

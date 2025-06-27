@@ -28,7 +28,7 @@ function Login() {
         alert('Login successful!');
 
         if (res.data.role === 'ADMIN') {
-          navigate('/dashboard');
+          navigate('/admin');
         } else {
           navigate('/');
         }
