@@ -3,6 +3,7 @@ import axios from 'axios';
 
 const AdminRentalDashboard = () => {
   const [rentals, setRentals] = useState([]);
+  const [users, setUsers] = useState([]); // New state for users
   const [formData, setFormData] = useState({
     id: null,
     userId: '',
@@ -16,15 +17,23 @@ const AdminRentalDashboard = () => {
   const [isEditing, setIsEditing] = useState(false);
 
   const apiUrl = 'http://localhost:8080/api/rental';
+  const usersApiUrl = 'http://localhost:8080/api/users'; // Assuming this endpoint
 
   useEffect(() => {
     fetchRentals();
+    fetchUsers();
   }, []);
 
   const fetchRentals = () => {
     axios.get(`${apiUrl}/all`)
       .then(res => setRentals(res.data))
       .catch(() => alert('Failed to fetch rentals'));
+  };
+
+  const fetchUsers = () => {
+    axios.get(`${usersApiUrl}/all`)
+      .then(res => setUsers(res.data))
+      .catch(() => alert('Failed to fetch users'));
   };
 
   const handleChange = (e) => {
@@ -108,7 +117,17 @@ const AdminRentalDashboard = () => {
       }}>
         <h2>{isEditing ? '✏️ Edit Rental' : '➕ Add New Rental'}</h2>
         <form onSubmit={handleSubmit} style={{ display: 'grid', gap: '10px' }}>
-          <input name="userId" placeholder="User ID" value={formData.userId} onChange={handleChange} required />
+
+          {/* User Select Dropdown */}
+          <select name="userId" value={formData.userId} onChange={handleChange} required>
+            <option value="">Select User</option>
+            {users.map(user => (
+              <option key={user.id} value={user.id}>
+                {user.username || user.id}
+              </option>
+            ))}
+          </select>
+
           <input name="toolId" placeholder="Tool ID" value={formData.toolId} onChange={handleChange} required />
           <input name="startDate" type="date" value={formData.startDate} onChange={handleChange} required />
           <input name="endDate" type="date" value={formData.endDate} onChange={handleChange} required />

@@ -5,6 +5,8 @@ import com.project.toolbox.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import java.util.List;
+
 
 import java.time.LocalDateTime;
 
@@ -31,5 +33,8 @@ public class UserService {
         return userRepository.findByEmail(email)
                 .filter(user -> passwordEncoder.matches(rawPassword, user.getPasswordHash()))
                 .orElse(null);
+    }
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
     }
 }

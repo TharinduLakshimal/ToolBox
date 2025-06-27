@@ -35,6 +35,9 @@ public class SecurityConfig {
                 // Allow rental and payment for now (optional)
                 .requestMatchers("/api/payment/**", "/api/rental/**").permitAll()
 
+                // **Allow getting all users without authentication**
+                .requestMatchers(HttpMethod.GET, "/api/users/all").permitAll()
+
                 // Protect user profile (authenticated only)
                 .requestMatchers("/api/user/profile").authenticated()
 
