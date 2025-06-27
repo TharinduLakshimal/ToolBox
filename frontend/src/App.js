@@ -9,12 +9,12 @@ import Contact from './pages/contact';
 import Login from './pages/login';
 import Register from './pages/register';
 import Rent from './pages/Rent';
-import AdminDashboard from './pages/AdminDashboard';
+//import AdminDashboard from './pages/AdminDashboard';
+import Dashboard from './pages/Dashboard'; // ✅ Import the new rental dashboard
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  // Check login state on app load or token change
   useEffect(() => {
     const token = localStorage.getItem('token');
     setIsLoggedIn(!!token);
@@ -23,7 +23,6 @@ function App() {
   return (
     <Router>
       <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-        {/* Pass login status and update function to Header */}
         <Header isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
         <div style={{ flex: 1 }}>
           <Routes>
@@ -34,8 +33,8 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/rent/:id" element={<Rent />} />
-            <Route path="/admin" element={<AdminDashboard />} />
-
+            <Route path="/admin" element={<Dashboard />} />
+          
           </Routes>
         </div>
         <Footer />

@@ -71,8 +71,8 @@ const Header = () => {
 
         {/* Show Dashboard if user is admin */}
         {role === 'ADMIN' && (
-          <button style={styles.button} onClick={() => navigate('/admin')}>
-            Dashboard
+            <button style={styles.button} onClick={() => navigate('/admin')}>
+            Admin Dashboard
           </button>
         )}
 
