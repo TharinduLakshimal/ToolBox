@@ -36,7 +36,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/payment/**", "/api/rental/**").permitAll()
 
                 // **Allow getting all users without authentication**
-                .requestMatchers(HttpMethod.GET, "/api/users/all").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/users/**").permitAll()
 
                 // Protect user profile (authenticated only)
                 .requestMatchers("/api/user/profile").authenticated()
