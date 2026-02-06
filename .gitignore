@@ -1,0 +1,23 @@
+# Java / Maven
+target/
+*.class
+*.jar
+.mvn/
+mvnw
+mvnw.cmd
+
+# Node / React
+node_modules/
+build/
+.env
+.env.local
+
+# Docker & OS
+mysql-data/
+.DS_Store
+Thumbs.db
+
+# IDEs
+.idea/
+.vscode/
+*.iml
