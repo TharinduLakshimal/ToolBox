@@ -6,6 +6,7 @@ services:
     container_name: toolbox-mysql
     restart: unless-stopped
     environment:
+      # Keep these as they are for the database setup
       MYSQL_ROOT_PASSWORD: "" 
       MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
       MYSQL_DATABASE: toolbox_db
@@ -20,8 +21,8 @@ services:
       retries: 10
 
   backend:
-    build:
-      context: ./Backend/toolbox
+    # Changed from 'build' to your Docker Hub image
+    image: tharindulakshimal/toolbox-backend:latest
     container_name: toolbox-backend
     restart: unless-stopped
     ports:
@@ -35,8 +36,8 @@ services:
         condition: service_healthy
 
   frontend:
-    build:
-      context: ./frontend
+    # Changed from 'build' to your Docker Hub image
+    image: tharindulakshimal/toolbox-frontend:latest
     container_name: toolbox-frontend
     restart: unless-stopped
     ports:
