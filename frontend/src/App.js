@@ -1,16 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Header from './components/header';
+
+// Layout Components
+import Header from './components/Header';       
 import Footer from './components/Footer';
-import Home from './pages/home';
-import Tools from './pages/tools';
-import About from './pages/aboutus';
-import Contact from './pages/contact';
-import Login from './pages/login';
-import Register from './pages/register';
-import Rent from './pages/Rent';
-//import AdminDashboard from './pages/AdminDashboard';
-import Dashboard from './pages/Dashboard'; // ✅ Import the new rental dashboard
+
+// Static / Marketing Pages
+import Home from './pages/Home';                 
+import About from './pages/AboutUs';             
+import Contact from './pages/Contact';           
+
+// Feature Modules
+import Login from './features/auth/Login';       
+import Register from './features/auth/Register'; 
+import Tools from './features/tools/Tools';     
+import Rent from './features/tools/Rent';       
+import Dashboard from './features/admin/Dashboard'; 
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -34,7 +39,6 @@ function App() {
             <Route path="/register" element={<Register />} />
             <Route path="/rent/:id" element={<Rent />} />
             <Route path="/admin" element={<Dashboard />} />
-          
           </Routes>
         </div>
         <Footer />
