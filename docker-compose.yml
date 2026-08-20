@@ -1,0 +1,49 @@
+version: '3.9'
+
+services:
+  mysql:
+    image: mysql:8
+    container_name: toolbox-mysql
+    restart: unless-stopped
+    environment:
+      # Keep these as they are for the database setup
+      MYSQL_ROOT_PASSWORD: "" 
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_DATABASE: toolbox_db
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    # Changed from 'build' to your Docker Hub image
+    image: tharindulakshimal/toolbox-backend:latest
+    container_name: toolbox-backend
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/toolbox_db?allowPublicKeyRetrieval=true&useSSL=false
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  frontend:
+    # Changed from 'build' to your Docker Hub image
+    image: tharindulakshimal/toolbox-frontend:latest
+    container_name: toolbox-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+volumes:
+  mysql-data:
