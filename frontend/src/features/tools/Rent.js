@@ -10,8 +10,43 @@ const Rent = () => {
   const [quantity, setQuantity] = useState(1);
   const [totalPrice, setTotalPrice] = useState(0);
   const [loading, setLoading] = useState(false);
-
   const currentUserId = 1;
+
+  const addToCart = () => {
+    if (!fromDate || !toDate || !quantity) {
+      alert('❗ Please fill all fields.');
+      return;
+    }
+    if (new Date(toDate) < new Date(fromDate)) {
+      alert('❗ To date cannot be earlier than From date.');
+      return;
+    }
+    if (quantity <= 0 || quantity > tool.quantity) {
+      alert(`❗ Quantity must be between 1 and ${tool.quantity}`);
+      return;
+    }
+
+    const days = Math.ceil((new Date(toDate) - new Date(fromDate)) / (1000 * 60 * 60 * 24)) + 1;
+    const item = {
+      cartId: `${tool.id}-${Date.now()}`,
+      id: tool.id,
+      name: tool.name,
+      imageUrl: tool.imageUrl,
+      pricePerDay: tool.pricePerDay,
+      quantity,
+      startDate: fromDate,
+      endDate: toDate,
+      days,
+      totalPrice: days * tool.pricePerDay * quantity,
+    };
+
+    const existingCart = JSON.parse(localStorage.getItem('toolCart') || '[]');
+    const updatedCart = [...existingCart, item];
+    localStorage.setItem('toolCart', JSON.stringify(updatedCart));
+    window.dispatchEvent(new Event('cartUpdated'));
+
+    alert('✅ Product added to cart successfully!');
+  };
 
   useEffect(() => {
     axios
@@ -218,25 +253,42 @@ const Rent = () => {
               </div>
             </div>
 
-            <button
-              onClick={handleConfirm}
-              disabled={loading}
-              style={{
-                width: '100%',
-                marginTop: '22px',
-                padding: '16px 18px',
-                border: 'none',
-                borderRadius: '16px',
-                background: loading ? '#64748b' : 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)',
-                color: '#fff',
-                fontWeight: '800',
-                fontSize: '18px',
-                cursor: loading ? 'not-allowed' : 'pointer',
-                boxShadow: '0 14px 30px rgba(34, 197, 94, 0.28)',
-              }}
-            >
-              {loading ? 'Processing...' : 'Confirm rental'}
-            </button>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginTop: '22px' }}>
+              <button
+                onClick={addToCart}
+                style={{
+                  padding: '16px 18px',
+                  border: 'none',
+                  borderRadius: '16px',
+                  background: 'linear-gradient(135deg, #38bdf8 0%, #0ea5e9 100%)',
+                  color: '#fff',
+                  fontWeight: '800',
+                  fontSize: '18px',
+                  cursor: 'pointer',
+                  boxShadow: '0 14px 30px rgba(14, 165, 233, 0.25)',
+                }}
+              >
+                Add to cart
+              </button>
+
+              <button
+                onClick={handleConfirm}
+                disabled={loading}
+                style={{
+                  padding: '16px 18px',
+                  border: 'none',
+                  borderRadius: '16px',
+                  background: loading ? '#64748b' : 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)',
+                  color: '#fff',
+                  fontWeight: '800',
+                  fontSize: '18px',
+                  cursor: loading ? 'not-allowed' : 'pointer',
+                  boxShadow: '0 14px 30px rgba(34, 197, 94, 0.28)',
+                }}
+              >
+                {loading ? 'Processing...' : 'Confirm rental'}
+              </button>
+            </div>
 
             <div style={{ marginTop: '18px', color: '#cbd5e1', fontSize: '14px', lineHeight: '1.7' }}>
               ✓ Secure booking<br />

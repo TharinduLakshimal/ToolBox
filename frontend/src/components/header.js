@@ -4,15 +4,27 @@ import { useNavigate, Link, useLocation } from 'react-router-dom';
 const Header = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [role, setRole] = useState('');
+  const [cartCount, setCartCount] = useState(0);
   const navigate = useNavigate();
   const location = useLocation();
+
+  const syncCartCount = () => {
+    const storedCart = JSON.parse(localStorage.getItem('toolCart') || '[]');
+    setCartCount(storedCart.length);
+  };
 
   useEffect(() => {
     const token = localStorage.getItem('token');
     const storedRole = localStorage.getItem('role');
     setIsLoggedIn(!!token);
     setRole(storedRole || '');
+    syncCartCount();
   }, [location]);
+
+  useEffect(() => {
+    window.addEventListener('cartUpdated', syncCartCount);
+    return () => window.removeEventListener('cartUpdated', syncCartCount);
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -64,6 +76,31 @@ const Header = () => {
       cursor: 'pointer',
       boxShadow: '0 6px 18px rgba(15, 23, 42, 0.12)',
     },
+    cartButton: {
+      position: 'relative',
+      background: '#0ea5e9',
+      color: '#fff',
+      border: 'none',
+      borderRadius: '12px',
+      padding: '10px 14px',
+      fontWeight: '700',
+      cursor: 'pointer',
+    },
+    badge: {
+      position: 'absolute',
+      top: '-8px',
+      right: '-8px',
+      background: '#f97316',
+      color: '#fff',
+      borderRadius: '999px',
+      width: '20px',
+      height: '20px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      fontSize: '11px',
+      fontWeight: '800',
+    },
   };
 
   return (
@@ -76,6 +113,11 @@ const Header = () => {
         <Link to="/tool" style={styles.link}>Tools</Link>
         <Link to="/about" style={styles.link}>About</Link>
         <Link to="/contact" style={styles.link}>Contact</Link>
+
+        <button style={styles.cartButton} onClick={() => navigate('/cart')}>
+          Cart
+          {cartCount > 0 && <span style={styles.badge}>{cartCount}</span>}
+        </button>
 
         {role === 'ADMIN' && (
           <button style={styles.button} onClick={() => navigate('/admin')}>
