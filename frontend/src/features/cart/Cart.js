@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 const Cart = () => {
@@ -46,6 +47,46 @@ const Cart = () => {
     window.dispatchEvent(new Event('cartUpdated'));
     setCartItems([]);
     setTotal(0);
+  };
+
+  const handleCheckout = async () => {
+    if (!cartItems.length) {
+      alert('Your cart is empty.');
+      return;
+    }
+
+    const email = localStorage.getItem('email');
+    if (!email) {
+      alert('Please log in before checkout.');
+      navigate('/login');
+      return;
+    }
+
+    try {
+      const userResponse = await axios.get(
+        `http://localhost:8080/api/users/by-email?email=${encodeURIComponent(email)}`
+      );
+      const userId = userResponse.data.id;
+
+      for (const item of cartItems) {
+        await axios.post('http://localhost:8080/api/rental/create', {
+          userId,
+          toolId: item.id,
+          startDate: item.startDate,
+          endDate: item.endDate,
+          amount: Number(item.totalPrice || 0),
+          quantity: Number(item.quantity || 1),
+          status: 'CONFIRMED',
+        });
+      }
+
+      clearCart();
+      alert('Order confirmed!');
+      navigate('/');
+    } catch (error) {
+      console.error('Checkout failed:', error);
+      alert('Checkout failed. Please try again.');
+    }
   };
 
   if (cartItems.length === 0) {
@@ -174,7 +215,7 @@ const Cart = () => {
             </div>
 
             <button
-              onClick={() => alert('Checkout page coming soon')}
+              onClick={handleCheckout}
               style={{
                 width: '100%',
                 marginTop: '22px',
