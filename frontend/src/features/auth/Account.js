@@ -11,9 +11,7 @@ function Account() {
   useEffect(() => {
     const token = localStorage.getItem('token');
     const email = localStorage.getItem('email');
-    console.log(email);
-    console.log(token);
-    
+
     if (!token || !email) {
       setErrorMessage('You must be logged in to view this page.');
       setTimeout(() => navigate('/login'), 2000);

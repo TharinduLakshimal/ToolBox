@@ -27,6 +27,11 @@ public class RentalController {
         return ResponseEntity.ok(rentalService.getAllRentals());
     }
 
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<Rental>> getRentalsByUser(@PathVariable Long userId) {
+        return ResponseEntity.ok(rentalService.getRentalsByUserId(userId));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<Rental> getRentalById(@PathVariable Long id) {
         return ResponseEntity.ok(rentalService.getRentalById(id));
@@ -35,6 +40,16 @@ public class RentalController {
     @PutMapping("/update/{id}")
     public ResponseEntity<Rental> updateRental(@PathVariable Long id, @RequestBody RentalRequest request) {
         return ResponseEntity.ok(rentalService.updateRental(id, request));
+    }
+
+    @PutMapping("/{id}/extend")
+    public ResponseEntity<Rental> extendRental(@PathVariable Long id, @RequestParam int days) {
+        return ResponseEntity.ok(rentalService.extendRental(id, days));
+    }
+
+    @PutMapping("/{id}/return")
+    public ResponseEntity<Rental> returnRental(@PathVariable Long id) {
+        return ResponseEntity.ok(rentalService.returnRental(id));
     }
 
     @DeleteMapping("/delete/{id}")

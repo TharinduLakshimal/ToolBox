@@ -127,6 +127,9 @@ const Header = () => {
 
         {isLoggedIn ? (
           <>
+            <button style={styles.button} onClick={() => navigate('/my-rentals')}>
+              My Rentals
+            </button>
             <button style={styles.button} onClick={() => navigate('/account')}>
               My Account
             </button>

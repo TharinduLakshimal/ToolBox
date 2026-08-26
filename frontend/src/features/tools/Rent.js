@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const Rent = () => {
@@ -10,6 +10,7 @@ const Rent = () => {
   const [quantity, setQuantity] = useState(1);
   const [totalPrice, setTotalPrice] = useState(0);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
   const currentUserId = 1;
 
   const addToCart = () => {
@@ -44,8 +45,7 @@ const Rent = () => {
     const updatedCart = [...existingCart, item];
     localStorage.setItem('toolCart', JSON.stringify(updatedCart));
     window.dispatchEvent(new Event('cartUpdated'));
-
-    alert('✅ Product added to cart successfully!');
+    navigate('/cart');
   };
 
   useEffect(() => {

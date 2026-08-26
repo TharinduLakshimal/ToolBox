@@ -13,9 +13,11 @@ import Contact from './pages/Contact';
 // Feature Modules
 import Login from './features/auth/Login';
 import Register from './features/auth/Register';
+import Account from './features/auth/Account';
 import Tools from './features/tools/Tools';
 import Rent from './features/tools/Rent';
 import Cart from './features/cart/Cart';
+import MyRentals from './features/rentals/MyRentals';
 import Dashboard from './features/admin/Dashboard';
 
 function App() {
@@ -38,8 +40,10 @@ function App() {
             <Route path="/contact" element={<Contact />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/account" element={<Account />} />
             <Route path="/rent/:id" element={<Rent />} />
             <Route path="/cart" element={<Cart />} />
+            <Route path="/my-rentals" element={<MyRentals />} />
             <Route path="/admin" element={<Dashboard />} />
           </Routes>
         </div>

@@ -60,6 +60,12 @@ public class RentalService {
         return rentalRepository.findAll();
     }
 
+    public List<Rental> getRentalsByUserId(Long userId) {
+        return rentalRepository.findAll().stream()
+                .filter(rental -> rental.getUser() != null && userId.equals(rental.getUser().getId()))
+                .toList();
+    }
+
     public Rental updateRental(Long id, RentalRequest request) {
         Rental rental = rentalRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Rental not found"));
@@ -78,6 +84,43 @@ public class RentalService {
         rental.setStatus(RentalStatus.valueOf(request.status)); // status as string
         rentalRepository.save(rental);
         return rental;
+    }
+
+    public Rental extendRental(Long id, int days) {
+        Rental rental = rentalRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Rental not found"));
+
+        if (rental.getStatus() == RentalStatus.RETURNED || rental.getStatus() == RentalStatus.CANCELLED) {
+            throw new RuntimeException("This rental cannot be extended");
+        }
+
+        LocalDate newEndDate = rental.getEndDate().plusDays(days);
+        rental.setEndDate(newEndDate);
+
+        if (rental.getTool() != null && rental.getQuantity() != null) {
+            BigDecimal extraCharge = BigDecimal.valueOf(rental.getTool().getPricePerDay())
+                    .multiply(BigDecimal.valueOf(days))
+                    .multiply(BigDecimal.valueOf(rental.getQuantity()));
+            rental.setTotalAmount(rental.getTotalAmount().add(extraCharge));
+        }
+
+        rental.setStatus(RentalStatus.CONFIRMED);
+        return rentalRepository.save(rental);
+    }
+
+    public Rental returnRental(Long id) {
+        Rental rental = rentalRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Rental not found"));
+
+        if (rental.getTool() != null && rental.getQuantity() != null) {
+            Tool tool = rental.getTool();
+            tool.setQuantity(tool.getQuantity() + rental.getQuantity());
+            tool.setIsAvailable(true);
+            toolRepository.save(tool);
+        }
+
+        rental.setStatus(RentalStatus.RETURNED);
+        return rentalRepository.save(rental);
     }
 
     public void deleteRental(Long id) {
