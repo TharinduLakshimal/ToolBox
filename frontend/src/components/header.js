@@ -7,7 +7,6 @@ const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Check login status and user role when route changes
   useEffect(() => {
     const token = localStorage.getItem('token');
     const storedRole = localStorage.getItem('role');
@@ -17,7 +16,7 @@ const Header = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('token');
-    localStorage.removeItem('role'); // Remove role on logout
+    localStorage.removeItem('role');
     setIsLoggedIn(false);
     setRole('');
     navigate('/login');
@@ -25,36 +24,45 @@ const Header = () => {
 
   const styles = {
     header: {
+      position: 'sticky',
+      top: 0,
+      zIndex: 50,
       display: 'flex',
       justifyContent: 'space-between',
       alignItems: 'center',
-      padding: '15px 30px',
-      backgroundColor: '#282c34',
+      padding: '18px 32px',
+      background: 'rgba(15, 23, 42, 0.85)',
+      backdropFilter: 'blur(12px)',
+      borderBottom: '1px solid rgba(148, 163, 184, 0.15)',
       color: 'white',
     },
     logo: {
-      fontSize: '24px',
-      fontWeight: 'bold',
+      fontSize: '28px',
+      fontWeight: '900',
       cursor: 'pointer',
+      letterSpacing: '-0.04em',
     },
     navLinks: {
       display: 'flex',
       gap: '20px',
       alignItems: 'center',
+      flexWrap: 'wrap',
     },
     link: {
-      color: 'white',
+      color: '#e2e8f0',
       textDecoration: 'none',
+      fontWeight: '600',
       transition: 'color 0.3s ease',
     },
     button: {
-      backgroundColor: 'white',
-      color: '#282c34',
+      background: '#fff',
+      color: '#111827',
       border: 'none',
-      borderRadius: '5px',
-      padding: '8px 12px',
-      fontWeight: 'bold',
+      borderRadius: '12px',
+      padding: '10px 14px',
+      fontWeight: '700',
       cursor: 'pointer',
+      boxShadow: '0 6px 18px rgba(15, 23, 42, 0.12)',
     },
   };
 
@@ -69,10 +77,9 @@ const Header = () => {
         <Link to="/about" style={styles.link}>About</Link>
         <Link to="/contact" style={styles.link}>Contact</Link>
 
-        {/* Show Dashboard if user is admin */}
         {role === 'ADMIN' && (
-            <button style={styles.button} onClick={() => navigate('/admin')}>
-            Admin Dashboard
+          <button style={styles.button} onClick={() => navigate('/admin')}>
+            Admin
           </button>
         )}
 
