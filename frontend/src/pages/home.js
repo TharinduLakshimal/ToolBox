@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import ProductCard from '../components/ProductCard';
 
 const Home = () => {
   const [tools, setTools] = useState([]);
@@ -100,39 +101,12 @@ const Home = () => {
       <div style={{ display: 'flex', overflowX: 'auto', padding: '10px 0' }}>
         {filteredTools.length > 0 ? (
           filteredTools.map((tool) => (
-            <div
+            <ProductCard
               key={tool.id}
-              style={{
-                minWidth: '200px',
-                marginRight: '50px',
-                background: '#f5f5f5',
-                padding: '10px',
-                borderRadius: '10px',
-                textAlign: 'center',
-                boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
-              }}
-            >
-              <img
-                src={tool.imageUrl}
-                alt={tool.name}
-                style={{ width: '100%', height: '170px', objectFit: 'cover', borderRadius: '5px' }}
-              />
-              <p style={{ marginTop: '10px', fontWeight: 'bold' }}>{tool.name}</p>
-              <button
-                onClick={() => handleRentClick(tool.id)}
-                style={{
-                  padding: '10px',
-                  backgroundColor: '#282c34',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '4px',
-                  marginTop: '10px',
-                  cursor: 'pointer',
-                }}
-              >
-                Rent Now
-              </button>
-            </div>
+              product={tool}
+              onClick={() => handleRentClick(tool.id)}
+              compact
+            />
           ))
         ) : (
           <p style={{ paddingLeft: '10px' }}>No tools found.</p>

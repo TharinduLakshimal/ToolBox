@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import ProductCard from '../../components/ProductCard';
 
 const Tool = () => {
   const [tools, setTools] = useState([]);
@@ -25,26 +26,11 @@ const Tool = () => {
       <h1 style={{ fontSize: '2.5rem', marginBottom: '20px', textAlign: 'center' }}>Available Tools for Rent</h1>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px' }}>
         {tools.map((tool) => (
-          <div
+          <ProductCard
             key={tool.id}
-            style={{
-              border: '1px solid #ccc',
-              borderRadius: '8px',
-              padding: '21px',
-              width: '200px',
-            }}
-          >
-            <img
-              src={tool.imageUrl}
-              alt={tool.name}
-              style={{ width: '100%', borderRadius: '4px' }}
-            />
-            <h2>{tool.name}</h2>
-            <p>Rs. {tool.pricePerDay}/day</p>
-            <button onClick={() => handleRentClick(tool.id)} style={{ padding: '10px', backgroundColor: '#282c34', color: 'white', border: 'none', borderRadius: '4px' }}>
-              Rent Now
-            </button>
-          </div>
+            product={tool}
+            onClick={() => handleRentClick(tool.id)}
+          />
         ))}
       </div>
     </div>
