@@ -123,7 +123,7 @@ const Rent = () => {
 
   if (!tool) {
     return (
-      <div style={{ padding: '40px 20px', textAlign: 'center', color: '#475569', fontSize: '18px' }}>
+      <div style={{ padding: '60px 20px', textAlign: 'center', color: '#475569', fontSize: '18px' }}>
         Loading tool data...
       </div>
     );
@@ -135,144 +135,286 @@ const Rent = () => {
       : 0;
 
   return (
-    <div style={{ background: 'linear-gradient(180deg, #f8fafc 0%, #eef6ff 100%)', minHeight: '100vh', padding: '32px 20px 60px' }}>
-      <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-        <div style={{ marginBottom: '22px', color: '#0ea5e9', fontWeight: '800', letterSpacing: '0.1em', textTransform: 'uppercase', fontSize: '12px' }}>
-          Rental booking
+    <div style={{ background: 'linear-gradient(180deg, #f8fafc 0%, #eef6ff 100%)', minHeight: 'calc(100vh - 70px)', padding: '16px 20px 32px' }}>
+      <div style={{ maxWidth: '1120px', margin: '0 auto' }}>
+        {/* Top Header & Breadcrumbs */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+          <button
+            onClick={() => navigate(-1)}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: '#0284c7',
+              fontSize: '14px',
+              fontWeight: '700',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: 0,
+            }}
+          >
+            ← Back to tools
+          </button>
+          <div
+            style={{
+              background: '#e0f2fe',
+              color: '#0369a1',
+              padding: '4px 10px',
+              borderRadius: '999px',
+              fontWeight: '800',
+              fontSize: '11px',
+              textTransform: 'uppercase',
+              letterSpacing: '0.08em',
+            }}
+          >
+            Rental booking
+          </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: '28px', alignItems: 'stretch' }}>
-          <div style={{ background: '#fff', borderRadius: '28px', padding: '24px', boxShadow: '0 18px 35px rgba(15, 23, 42, 0.08)', border: '1px solid rgba(148,163,184,0.12)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px', flexWrap: 'wrap', gap: '10px' }}>
+        {/* Main Side-by-Side Viewport-Friendly Grid */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1.05fr 0.95fr', gap: '20px', alignItems: 'start' }}>
+          {/* Left Column: Tool Details & Image */}
+          <div
+            style={{
+              background: '#fff',
+              borderRadius: '20px',
+              padding: '18px',
+              boxShadow: '0 10px 25px rgba(15, 23, 42, 0.05)',
+              border: '1px solid rgba(148,163,184,0.14)',
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
               <div>
-                <div style={{ color: '#0ea5e9', fontSize: '12px', fontWeight: '700', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Available now</div>
-                <h1 style={{ margin: '8px 0 0', fontSize: '34px', color: '#0f172a' }}>{tool.name}</h1>
+                <div style={{ color: '#0284c7', fontSize: '11px', fontWeight: '700', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+                  Selected Tool
+                </div>
+                <h1 style={{ margin: '4px 0 0', fontSize: '24px', color: '#0f172a', fontWeight: '800' }}>{tool.name}</h1>
               </div>
-              <div style={{ background: '#dcfce7', color: '#166534', padding: '8px 12px', borderRadius: '999px', fontWeight: '800', fontSize: '13px' }}>
+              <div
+                style={{
+                  background: '#dcfce7',
+                  color: '#166534',
+                  padding: '5px 12px',
+                  borderRadius: '999px',
+                  fontWeight: '700',
+                  fontSize: '12px',
+                  whiteSpace: 'nowrap',
+                }}
+              >
                 In stock • {tool.quantity} units
               </div>
             </div>
 
-            <div style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', borderRadius: '24px', padding: '16px' }}>
+            {/* Compact Tool Image Preview */}
+            <div
+              style={{
+                background: '#f8fafc',
+                borderRadius: '14px',
+                height: '240px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                overflow: 'hidden',
+                border: '1px solid rgba(148,163,184,0.15)',
+              }}
+            >
               <img
                 src={tool.imageUrl}
                 alt={tool.name}
-                style={{ width: '100%', height: '420px', objectFit: 'cover', borderRadius: '18px', display: 'block' }}
+                style={{
+                  width: '100%',
+                  height: '240px',
+                  objectFit: 'contain',
+                  padding: '12px',
+                  boxSizing: 'border-box',
+                }}
               />
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '16px', marginTop: '22px' }}>
-              <div style={{ background: '#f8fafc', borderRadius: '18px', padding: '18px', border: '1px solid rgba(148,163,184,0.14)' }}>
-                <div style={{ color: '#64748b', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Daily rate</div>
-                <div style={{ marginTop: '8px', fontSize: '24px', fontWeight: '800', color: '#0f172a' }}>Rs. {tool.pricePerDay}</div>
+            {/* Quick Specs Chips */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '10px', marginTop: '14px' }}>
+              <div style={{ background: '#f8fafc', borderRadius: '12px', padding: '10px 12px', border: '1px solid rgba(148,163,184,0.12)', textAlign: 'center' }}>
+                <div style={{ color: '#64748b', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Daily rate</div>
+                <div style={{ marginTop: '4px', fontSize: '17px', fontWeight: '800', color: '#0f172a' }}>Rs. {tool.pricePerDay}</div>
               </div>
-              <div style={{ background: '#f8fafc', borderRadius: '18px', padding: '18px', border: '1px solid rgba(148,163,184,0.14)' }}>
-                <div style={{ color: '#64748b', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Pickup</div>
-                <div style={{ marginTop: '8px', fontSize: '24px', fontWeight: '800', color: '#0f172a' }}>Today</div>
+              <div style={{ background: '#f8fafc', borderRadius: '12px', padding: '10px 12px', border: '1px solid rgba(148,163,184,0.12)', textAlign: 'center' }}>
+                <div style={{ color: '#64748b', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Availability</div>
+                <div style={{ marginTop: '4px', fontSize: '17px', fontWeight: '800', color: '#0f172a' }}>{tool.quantity} in stock</div>
               </div>
-              <div style={{ background: '#f8fafc', borderRadius: '18px', padding: '18px', border: '1px solid rgba(148,163,184,0.14)' }}>
-                <div style={{ color: '#64748b', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Support</div>
-                <div style={{ marginTop: '8px', fontSize: '24px', fontWeight: '800', color: '#0f172a' }}>24/7</div>
+              <div style={{ background: '#f8fafc', borderRadius: '12px', padding: '10px 12px', border: '1px solid rgba(148,163,184,0.12)', textAlign: 'center' }}>
+                <div style={{ color: '#64748b', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Pickup</div>
+                <div style={{ marginTop: '4px', fontSize: '17px', fontWeight: '800', color: '#0f172a' }}>Same Day</div>
               </div>
             </div>
           </div>
 
-          <div style={{ background: '#0f172a', borderRadius: '28px', padding: '24px', color: '#fff', boxShadow: '0 18px 35px rgba(15, 23, 42, 0.18)' }}>
-            <div style={{ fontSize: '12px', fontWeight: '800', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#7dd3fc', marginBottom: '10px' }}>
-              Book your rental
+          {/* Right Column: Date Selection & Rental Action */}
+          <div
+            style={{
+              background: '#0f172a',
+              borderRadius: '20px',
+              padding: '20px 22px',
+              color: '#fff',
+              boxShadow: '0 12px 30px rgba(15, 23, 42, 0.16)',
+            }}
+          >
+            <div style={{ fontSize: '11px', fontWeight: '700', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#7dd3fc', marginBottom: '4px' }}>
+              Configure Booking
             </div>
-            <h2 style={{ margin: '0 0 22px', fontSize: '30px' }}>Choose your dates</h2>
+            <h2 style={{ margin: '0 0 14px', fontSize: '22px', fontWeight: '800' }}>Choose your dates</h2>
 
-            <div style={{ display: 'grid', gap: '18px' }}>
-              <div style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(148,163,184,0.2)', borderRadius: '18px', padding: '16px 14px' }}>
-                <label style={{ display: 'block', color: '#cbd5e1', fontSize: '12px', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.08em' }}>From date</label>
+            {/* Side-by-Side Date Selectors to Save Vertical Space */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '12px' }}>
+              <div style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(148,163,184,0.2)', borderRadius: '12px', padding: '10px 12px' }}>
+                <label style={{ display: 'block', color: '#cbd5e1', fontSize: '11px', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: '600' }}>
+                  From date
+                </label>
                 <input
                   type="date"
                   value={fromDate}
                   onChange={(e) => setFromDate(e.target.value)}
                   style={{
                     width: '100%',
+                    boxSizing: 'border-box',
                     background: '#fff',
                     color: '#0f172a',
                     border: 'none',
-                    borderRadius: '12px',
-                    padding: '12px 14px',
-                    fontSize: '15px',
+                    borderRadius: '8px',
+                    padding: '8px 10px',
+                    fontSize: '13px',
+                    fontWeight: '600',
+                    outline: 'none',
                   }}
                 />
               </div>
 
-              <div style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(148,163,184,0.2)', borderRadius: '18px', padding: '16px 14px' }}>
-                <label style={{ display: 'block', color: '#cbd5e1', fontSize: '12px', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.08em' }}>To date</label>
+              <div style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(148,163,184,0.2)', borderRadius: '12px', padding: '10px 12px' }}>
+                <label style={{ display: 'block', color: '#cbd5e1', fontSize: '11px', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: '600' }}>
+                  To date
+                </label>
                 <input
                   type="date"
                   value={toDate}
                   onChange={(e) => setToDate(e.target.value)}
                   style={{
                     width: '100%',
+                    boxSizing: 'border-box',
                     background: '#fff',
                     color: '#0f172a',
                     border: 'none',
-                    borderRadius: '12px',
-                    padding: '12px 14px',
-                    fontSize: '15px',
+                    borderRadius: '8px',
+                    padding: '8px 10px',
+                    fontSize: '13px',
+                    fontWeight: '600',
+                    outline: 'none',
                   }}
                 />
               </div>
+            </div>
 
-              <div style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(148,163,184,0.2)', borderRadius: '18px', padding: '16px 14px' }}>
-                <label style={{ display: 'block', color: '#cbd5e1', fontSize: '12px', marginBottom: '10px', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Quantity</label>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
-                  <button
-                    onClick={() => handleQuantityChange(quantity - 1)}
-                    style={{ width: '42px', height: '42px', borderRadius: '12px', border: 'none', background: '#fff', color: '#0f172a', fontSize: '24px', fontWeight: '700', cursor: 'pointer' }}
-                  >
-                    −
-                  </button>
-                  <div style={{ flex: 1, textAlign: 'center', fontSize: '28px', fontWeight: '800' }}>{quantity}</div>
-                  <button
-                    onClick={() => handleQuantityChange(quantity + 1)}
-                    style={{ width: '42px', height: '42px', borderRadius: '12px', border: 'none', background: '#fff', color: '#0f172a', fontSize: '24px', fontWeight: '700', cursor: 'pointer' }}
-                  >
-                    +
-                  </button>
-                </div>
+            {/* Quantity Selector */}
+            <div
+              style={{
+                background: 'rgba(255,255,255,0.06)',
+                border: '1px solid rgba(148,163,184,0.2)',
+                borderRadius: '12px',
+                padding: '10px 14px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                marginBottom: '14px',
+              }}
+            >
+              <div>
+                <label style={{ display: 'block', color: '#cbd5e1', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: '600' }}>
+                  Quantity
+                </label>
+                <span style={{ fontSize: '12px', color: '#94a3b8' }}>Max {tool.quantity} available</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <button
+                  onClick={() => handleQuantityChange(quantity - 1)}
+                  style={{
+                    width: '32px',
+                    height: '32px',
+                    borderRadius: '8px',
+                    border: 'none',
+                    background: '#fff',
+                    color: '#0f172a',
+                    fontSize: '18px',
+                    fontWeight: '800',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  −
+                </button>
+                <div style={{ minWidth: '24px', textAlign: 'center', fontSize: '18px', fontWeight: '800' }}>{quantity}</div>
+                <button
+                  onClick={() => handleQuantityChange(quantity + 1)}
+                  style={{
+                    width: '32px',
+                    height: '32px',
+                    borderRadius: '8px',
+                    border: 'none',
+                    background: '#fff',
+                    color: '#0f172a',
+                    fontSize: '18px',
+                    fontWeight: '800',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  +
+                </button>
               </div>
             </div>
 
-            <div style={{ marginTop: '26px', background: 'rgba(255,255,255,0.04)', borderRadius: '18px', padding: '18px', border: '1px solid rgba(148,163,184,0.15)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', color: '#cbd5e1', marginBottom: '10px' }}>
-                <span>Rental days</span>
-                <strong style={{ color: '#fff' }}>{days || 0} days</strong>
+            {/* Pricing Summary Box */}
+            <div
+              style={{
+                background: 'rgba(255,255,255,0.04)',
+                borderRadius: '14px',
+                padding: '12px 14px',
+                border: '1px solid rgba(148,163,184,0.15)',
+                marginBottom: '14px',
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', color: '#cbd5e1', fontSize: '13px', marginBottom: '6px' }}>
+                <span>Rental Duration</span>
+                <strong style={{ color: '#fff' }}>{days || 0} {days === 1 ? 'day' : 'days'}</strong>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', color: '#cbd5e1', marginBottom: '10px' }}>
-                <span>Unit price</span>
-                <strong style={{ color: '#fff' }}>Rs. {tool.pricePerDay}</strong>
+              <div style={{ display: 'flex', justifyContent: 'space-between', color: '#cbd5e1', fontSize: '13px', marginBottom: '8px' }}>
+                <span>Rate breakdown</span>
+                <strong style={{ color: '#fff' }}>Rs. {tool.pricePerDay} × {quantity} unit(s)</strong>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', color: '#cbd5e1', marginBottom: '18px' }}>
-                <span>Quantity</span>
-                <strong style={{ color: '#fff' }}>{quantity}</strong>
-              </div>
-              <div style={{ height: '1px', background: 'rgba(148,163,184,0.2)', margin: '10px 0 16px' }} />
+              <div style={{ height: '1px', background: 'rgba(148,163,184,0.2)', margin: '6px 0 10px' }} />
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ color: '#fff', fontSize: '18px', fontWeight: '700' }}>Total</span>
-                <span style={{ color: '#7dd3fc', fontSize: '30px', fontWeight: '900' }}>Rs. {totalPrice}</span>
+                <span style={{ color: '#fff', fontSize: '15px', fontWeight: '700' }}>Total Amount</span>
+                <span style={{ color: '#38bdf8', fontSize: '24px', fontWeight: '900' }}>Rs. {totalPrice}</span>
               </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginTop: '22px' }}>
+            {/* Action Buttons */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
               <button
                 onClick={addToCart}
                 style={{
-                  padding: '16px 18px',
+                  padding: '12px 14px',
                   border: 'none',
-                  borderRadius: '16px',
+                  borderRadius: '12px',
                   background: 'linear-gradient(135deg, #38bdf8 0%, #0ea5e9 100%)',
                   color: '#fff',
                   fontWeight: '800',
-                  fontSize: '18px',
+                  fontSize: '15px',
                   cursor: 'pointer',
-                  boxShadow: '0 14px 30px rgba(14, 165, 233, 0.25)',
+                  boxShadow: '0 8px 20px rgba(14, 165, 233, 0.25)',
+                  transition: 'opacity 0.2s',
                 }}
               >
                 Add to cart
@@ -282,25 +424,24 @@ const Rent = () => {
                 onClick={handleConfirm}
                 disabled={loading}
                 style={{
-                  padding: '16px 18px',
+                  padding: '12px 14px',
                   border: 'none',
-                  borderRadius: '16px',
+                  borderRadius: '12px',
                   background: loading ? '#64748b' : 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)',
                   color: '#fff',
                   fontWeight: '800',
-                  fontSize: '18px',
+                  fontSize: '15px',
                   cursor: loading ? 'not-allowed' : 'pointer',
-                  boxShadow: '0 14px 30px rgba(34, 197, 94, 0.28)',
+                  boxShadow: '0 8px 20px rgba(34, 197, 94, 0.25)',
+                  transition: 'opacity 0.2s',
                 }}
               >
                 {loading ? 'Processing...' : 'Confirm rental'}
               </button>
             </div>
 
-            <div style={{ marginTop: '18px', color: '#cbd5e1', fontSize: '14px', lineHeight: '1.7' }}>
-              ✓ Secure booking<br />
-              ✓ Flexible payment options<br />
-              ✓ Fast support and delivery
+            <div style={{ marginTop: '12px', color: '#94a3b8', fontSize: '12px', textAlign: 'center', lineHeight: '1.5' }}>
+              ✓ Instant confirmation · Secure booking · 24/7 Support
             </div>
           </div>
         </div>

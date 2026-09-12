@@ -5,6 +5,14 @@ import api from '../../api/axiosConfig';
 const Cart = () => {
   const [cartItems, setCartItems] = useState([]);
   const [total, setTotal] = useState(0);
+  const [confirmModal, setConfirmModal] = useState({
+    isOpen: false,
+    title: '',
+    message: '',
+    confirmText: '',
+    type: 'remove',
+    onConfirm: null,
+  });
   const navigate = useNavigate();
 
   const loadCart = () => {
@@ -18,18 +26,57 @@ const Cart = () => {
     loadCart();
   }, []);
 
-  const removeItem = (cartId) => {
-    const updatedItems = cartItems.filter((item) => item.cartId !== cartId);
+  const openRemoveConfirm = (item) => {
+    setConfirmModal({
+      isOpen: true,
+      title: 'Remove item?',
+      message: `Are you sure you want to remove "${item.name}" from your cart?`,
+      confirmText: 'Yes, remove',
+      type: 'remove',
+      onConfirm: () => {
+        executeRemoveItem(item.cartId || item.id);
+        closeConfirmModal();
+      },
+    });
+  };
+
+  const openClearConfirm = () => {
+    setConfirmModal({
+      isOpen: true,
+      title: 'Clear cart?',
+      message: 'Are you sure you want to remove all tools from your cart? This cannot be undone.',
+      confirmText: 'Yes, clear all',
+      type: 'clear',
+      onConfirm: () => {
+        executeClearCart();
+        closeConfirmModal();
+      },
+    });
+  };
+
+  const closeConfirmModal = () => {
+    setConfirmModal((prev) => ({ ...prev, isOpen: false }));
+  };
+
+  const executeRemoveItem = (cartId) => {
+    const updatedItems = cartItems.filter((item) => (item.cartId || item.id) !== cartId);
     localStorage.setItem('toolCart', JSON.stringify(updatedItems));
     window.dispatchEvent(new Event('cartUpdated'));
     setCartItems(updatedItems);
     setTotal(updatedItems.reduce((sum, item) => sum + Number(item.totalPrice || 0), 0));
   };
 
+  const executeClearCart = () => {
+    localStorage.removeItem('toolCart');
+    window.dispatchEvent(new Event('cartUpdated'));
+    setCartItems([]);
+    setTotal(0);
+  };
+
   const updateQuantity = (cartId, nextQty) => {
     const updatedItems = cartItems
       .map((item) => {
-        if (item.cartId !== cartId) return item;
+        if (item.cartId !== cartId && item.id !== cartId) return item;
         const safeQty = Math.max(1, Number(nextQty) || 1);
         const days = item.days || 1;
         return { ...item, quantity: safeQty, totalPrice: days * item.pricePerDay * safeQty };
@@ -40,13 +87,6 @@ const Cart = () => {
     window.dispatchEvent(new Event('cartUpdated'));
     setCartItems(updatedItems);
     setTotal(updatedItems.reduce((sum, item) => sum + Number(item.totalPrice || 0), 0));
-  };
-
-  const clearCart = () => {
-    localStorage.removeItem('toolCart');
-    window.dispatchEvent(new Event('cartUpdated'));
-    setCartItems([]);
-    setTotal(0);
   };
 
   const handleCheckout = async () => {
@@ -74,7 +114,7 @@ const Cart = () => {
         });
       }
 
-      clearCart();
+      executeClearCart();
       alert('Order confirmed!');
       navigate('/my-rentals');
     } catch (error) {
@@ -119,18 +159,23 @@ const Cart = () => {
             <h1 style={{ margin: '8px 0 0', fontSize: '38px', color: '#0f172a' }}>Your selected tools</h1>
           </div>
           <button
-            onClick={clearCart}
+            onClick={openClearConfirm}
             style={{
-              background: 'transparent',
-              color: '#0f172a',
-              border: '1px solid rgba(15, 23, 42, 0.2)',
+              background: '#fff',
+              color: '#ef4444',
+              border: '1px solid rgba(239, 68, 68, 0.3)',
               borderRadius: '12px',
-              padding: '12px 16px',
+              padding: '11px 18px',
               fontWeight: '700',
               cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              transition: 'all 0.2s ease',
+              boxShadow: '0 2px 8px rgba(239, 68, 68, 0.08)',
             }}
           >
-            Clear cart
+            🗑️ Clear cart
           </button>
         </div>
 
@@ -173,8 +218,8 @@ const Cart = () => {
                 <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', alignItems: 'flex-end' }}>
                   <div style={{ fontSize: '24px', fontWeight: '900', color: '#0f172a' }}>Rs. {item.totalPrice}</div>
                   <button
-                    onClick={() => removeItem(item.cartId || item.id)}
-                    style={{ background: '#fee2e2', color: '#b91c1c', border: 'none', borderRadius: '10px', padding: '10px 12px', fontWeight: '700', cursor: 'pointer' }}
+                    onClick={() => openRemoveConfirm(item)}
+                    style={{ background: '#fee2e2', color: '#b91c1c', border: 'none', borderRadius: '10px', padding: '10px 14px', fontWeight: '700', cursor: 'pointer', transition: 'background 0.2s' }}
                   >
                     Remove
                   </button>
@@ -228,6 +273,87 @@ const Cart = () => {
           </aside>
         </div>
       </div>
+
+      {/* Confirmation Short Pop-up Modal */}
+      {confirmModal.isOpen && (
+        <div
+          onClick={closeConfirmModal}
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(15, 23, 42, 0.65)',
+            backdropFilter: 'blur(4px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 9999,
+            padding: '20px',
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              background: '#ffffff',
+              borderRadius: '22px',
+              padding: '28px 30px',
+              maxWidth: '380px',
+              width: '100%',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.3)',
+              textAlign: 'center',
+              border: '1px solid rgba(148, 163, 184, 0.2)',
+              boxSizing: 'border-box',
+            }}
+          >
+            <div style={{ fontSize: '46px', marginBottom: '10px' }}>
+              {confirmModal.type === 'clear' ? '🧹' : '🗑️'}
+            </div>
+            <h3 style={{ margin: '0 0 8px', color: '#0f172a', fontSize: '20px', fontWeight: '800' }}>
+              {confirmModal.title}
+            </h3>
+            <p style={{ margin: '0 0 22px', color: '#64748b', fontSize: '14px', lineHeight: '1.5' }}>
+              {confirmModal.message}
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+              <button
+                onClick={closeConfirmModal}
+                style={{
+                  padding: '11px 16px',
+                  borderRadius: '12px',
+                  border: '1px solid #cbd5e1',
+                  background: '#f8fafc',
+                  color: '#475569',
+                  fontWeight: '700',
+                  fontSize: '14px',
+                  cursor: 'pointer',
+                  transition: 'background 0.2s',
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmModal.onConfirm}
+                style={{
+                  padding: '11px 16px',
+                  borderRadius: '12px',
+                  border: 'none',
+                  background: '#ef4444',
+                  color: '#ffffff',
+                  fontWeight: '700',
+                  fontSize: '14px',
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 14px rgba(239, 68, 68, 0.35)',
+                  transition: 'background 0.2s',
+                }}
+              >
+                {confirmModal.confirmText}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
