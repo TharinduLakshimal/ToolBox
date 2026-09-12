@@ -1,0 +1,171 @@
+import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import api from '../../api/axiosConfig';
+
+function Register() {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [phone, setPhone] = useState('');
+  const [address, setAddress] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+
+  const navigate = useNavigate();
+
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setErrorMessage('');
+    setSuccessMessage('');
+
+    try {
+      await api.post('/api/auth/register', {
+        name: name.trim(),
+        email: email.trim(),
+        password,
+        phone: phone.trim(),
+        address: address.trim(),
+      });
+
+      setSuccessMessage('Registration successful! Redirecting to login...');
+      setTimeout(() => {
+        navigate('/login');
+      }, 1500);
+    } catch (err) {
+      setErrorMessage(
+        err.extractedMessage || err.response?.data?.message || 'Registration failed. Please check the form.'
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="register-page">
+      <h2>Register</h2>
+      <form onSubmit={handleRegister}>
+        <input
+          type="text"
+          placeholder="Full Name"
+          value={name}
+          required
+          onChange={(e) => setName(e.target.value)}
+        />
+        <input
+          type="email"
+          placeholder="Email Address"
+          value={email}
+          required
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <input
+          type="password"
+          placeholder="Password (minimum 6 characters)"
+          value={password}
+          required
+          minLength={6}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <input
+          type="text"
+          placeholder="Phone Number"
+          value={phone}
+          required
+          onChange={(e) => setPhone(e.target.value)}
+        />
+        <input
+          type="text"
+          placeholder="Address"
+          value={address}
+          required
+          onChange={(e) => setAddress(e.target.value)}
+        />
+        <button type="submit" disabled={loading}>
+          {loading ? 'Creating account...' : 'Register'}
+        </button>
+      </form>
+
+      {errorMessage && (
+        <div className="error-message" style={{ whiteSpace: 'pre-line' }}>
+          {errorMessage}
+        </div>
+      )}
+      {successMessage && (
+        <div className="success-message" style={{ color: '#16a34a', marginTop: '15px', fontWeight: 'bold' }}>
+          {successMessage}
+        </div>
+      )}
+
+      <p style={{ marginTop: '20px' }}>
+        Already have an account?{' '}
+        <Link to="/login" style={{ color: '#008cba', textDecoration: 'none' }}>
+          Login
+        </Link>
+      </p>
+
+      <style>{`
+        .register-page {
+          max-width: 500px;
+          margin: 60px auto;
+          padding: 40px;
+          background: #fdfdfd;
+          border-radius: 15px;
+          box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+          text-align: center;
+        }
+
+        .register-page h2 {
+          color: #2c3e50;
+          font-size: 2.2rem;
+          margin-bottom: 25px;
+        }
+
+        .register-page form {
+          display: flex;
+          flex-direction: column;
+          gap: 15px;
+        }
+
+        .register-page input {
+          padding: 12px;
+          font-size: 1rem;
+          border: 1px solid #ccc;
+          border-radius: 8px;
+          transition: 0.3s;
+        }
+
+        .register-page input:focus {
+          border-color: #3498db;
+          outline: none;
+          box-shadow: 0 0 6px rgba(52, 152, 219, 0.5);
+        }
+
+        .register-page button {
+          padding: 12px;
+          background: #27ae60;
+          color: white;
+          font-weight: bold;
+          font-size: 1rem;
+          border: none;
+          border-radius: 8px;
+          cursor: pointer;
+          transition: background 0.3s;
+        }
+
+        .register-page button:hover {
+          background: #1e8449;
+        }
+
+        .error-message {
+          color: #e74c3c;
+          font-size: 1rem;
+          margin-top: 15px;
+        }
+      `}</style>
+    </div>
+  );
+}
+
+export default Register;
