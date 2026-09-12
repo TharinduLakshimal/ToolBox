@@ -5,6 +5,7 @@ import AdminSidebar from './AdminSidebar';
 const AdminDashboard = () => {
   const [tools, setTools] = useState([]);
   const [rentals, setRentals] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [activeTab, setActiveTab] = useState('tools');
   const [formData, setFormData] = useState({
     id: null,
@@ -19,13 +20,16 @@ const AdminDashboard = () => {
   });
   const [isEditing, setIsEditing] = useState(false);
   const [searchKeyword, setSearchKeyword] = useState('');
+  const [categoryForm, setCategoryForm] = useState({ name: '', description: '' });
 
   const apiUrl = 'http://localhost:8080/api/tools';
   const rentalApiUrl = 'http://localhost:8080/api/rental';
+  const categoryApiUrl = 'http://localhost:8080/api/categories';
 
   useEffect(() => {
     fetchTools();
     fetchRentals();
+    fetchCategories();
   }, []);
 
   const fetchTools = () => {
@@ -40,6 +44,13 @@ const AdminDashboard = () => {
       .get(`${rentalApiUrl}/all`)
       .then((res) => setRentals(res.data))
       .catch((err) => console.error('Fetch rentals failed:', err));
+  };
+
+  const fetchCategories = () => {
+    axios
+      .get(`${categoryApiUrl}/all`)
+      .then((res) => setCategories(res.data))
+      .catch((err) => console.error('Fetch categories failed:', err));
   };
 
   const handleChange = (e) => {
@@ -99,6 +110,31 @@ const AdminDashboard = () => {
       .catch(() => alert('Search failed'));
   };
 
+  const handleCategoryChange = (e) => {
+    const { name, value } = e.target;
+    setCategoryForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleCategorySubmit = (e) => {
+    e.preventDefault();
+
+    if (!categoryForm.name.trim()) {
+      alert('Please enter a category name.');
+      return;
+    }
+
+    axios
+      .post(`${categoryApiUrl}/add`, {
+        name: categoryForm.name.trim(),
+        description: categoryForm.description.trim(),
+      })
+      .then(() => {
+        setCategoryForm({ name: '', description: '' });
+        fetchCategories();
+      })
+      .catch(() => alert('Failed to add category'));
+  };
+
   const resetForm = () => {
     setFormData({
       id: null,
@@ -142,7 +178,14 @@ const AdminDashboard = () => {
 
           <div>
             <label style={labelStyle}>Category</label>
-            <input name="category" value={formData.category} onChange={handleChange} required style={inputStyle} />
+            <select name="category" value={formData.category} onChange={handleChange} required style={inputStyle}>
+              <option value="">Select category</option>
+              {categories.map((category) => (
+                <option key={category.id} value={category.name}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div>
@@ -253,6 +296,59 @@ const AdminDashboard = () => {
     </>
   );
 
+  const renderCategoriesTab = () => (
+    <>
+      <div style={sectionHeaderWrap}>
+        <div>
+          <div style={eyebrow}>Admin panel</div>
+          <h1 style={pageTitle}>Categories</h1>
+        </div>
+        <div style={pill}>{categories.length} categories</div>
+      </div>
+
+      <div style={panelCard}>
+        <div style={panelHead}>
+          <h2 style={panelTitle}>Create category</h2>
+        </div>
+
+        <form onSubmit={handleCategorySubmit} style={formGrid}>
+          <div style={{ gridColumn: '1 / -1' }}>
+            <label style={labelStyle}>Category name</label>
+            <input name="name" value={categoryForm.name} onChange={handleCategoryChange} required style={inputStyle} />
+          </div>
+
+          <div style={{ gridColumn: '1 / -1' }}>
+            <label style={labelStyle}>Description</label>
+            <textarea name="description" value={categoryForm.description} onChange={handleCategoryChange} style={{ ...inputStyle, minHeight: '100px', resize: 'vertical' }} />
+          </div>
+
+          <div style={{ gridColumn: '1 / -1' }}>
+            <button type="submit" style={primaryButton}>Save category</button>
+          </div>
+        </form>
+      </div>
+
+      <div style={panelCard}>
+        <div style={panelHead}>
+          <h2 style={panelTitle}>Existing categories</h2>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
+          {categories.map((category) => (
+            <div key={category.id} style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '18px', padding: '18px' }}>
+              <div style={{ fontSize: '20px', fontWeight: '800', color: '#0f172a', marginBottom: '6px' }}>{category.name}</div>
+              <div style={{ color: '#475569', lineHeight: 1.5 }}>{category.description || 'No description provided.'}</div>
+            </div>
+          ))}
+
+          {categories.length === 0 && (
+            <div style={{ color: '#64748b', padding: '12px 0' }}>No categories available yet.</div>
+          )}
+        </div>
+      </div>
+    </>
+  );
+
   const renderRentedTab = () => (
     <>
       <div style={sectionHeaderWrap}>
@@ -320,11 +416,12 @@ const AdminDashboard = () => {
   return (
     <div style={pageWrap}>
       <div style={dashboardShell}>
-        <AdminSidebar activeTab={activeTab} setActiveTab={setActiveTab} stats={{ tools: tools.length, rentals: rentals.length }} />
+        <AdminSidebar activeTab={activeTab} setActiveTab={setActiveTab} stats={{ tools: tools.length, categories: categories.length, rentals: rentals.length }} />
 
         <main style={contentArea}>
           {activeTab === 'tools' && renderToolsTab()}
           {activeTab === 'show-tools' && renderShowToolsTab()}
+          {activeTab === 'categories' && renderCategoriesTab()}
           {activeTab === 'rented' && renderRentedTab()}
         </main>
       </div>

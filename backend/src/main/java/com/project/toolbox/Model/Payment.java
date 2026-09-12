@@ -30,6 +30,10 @@ public class Payment {
 
     private LocalDateTime paidAt;
     private String stripeTransactionId;
+
+    public Payment() {
+    }
+
     public Payment(Long id, Rental rental, String paymentMethod, BigDecimal amount, PaymentStatus status,
             LocalDateTime paidAt, String stripeTransactionId) {
         this.id = id;

@@ -4,6 +4,7 @@ const AdminSidebar = ({ activeTab, setActiveTab, stats }) => {
   const items = [
     { key: 'tools', label: 'Add Tools', icon: '＋' },
     { key: 'show-tools', label: 'Show Tools', icon: '🧰' },
+    { key: 'categories', label: 'Categories', icon: '🏷️' },
     { key: 'rented', label: 'Rented', icon: '📦' },
   ];
 
@@ -35,6 +36,9 @@ const AdminSidebar = ({ activeTab, setActiveTab, stats }) => {
             )}
             {item.key === 'show-tools' && (
               <span style={styles.countBadge}>{stats.tools || 0}</span>
+            )}
+            {item.key === 'categories' && (
+              <span style={styles.countBadge}>{stats.categories || 0}</span>
             )}
           </button>
         ))}

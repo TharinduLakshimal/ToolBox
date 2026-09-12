@@ -20,6 +20,10 @@ public class Notification {
     private String message; 
     private Boolean isRead; 
     private LocalDateTime createdAt;
+
+    public Notification() {
+    }
+
     public Notification(Long id, User user, String message, Boolean isRead, LocalDateTime createdAt) {
         this.id = id;
         this.user = user;

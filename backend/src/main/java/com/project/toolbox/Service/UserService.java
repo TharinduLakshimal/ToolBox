@@ -1,15 +1,18 @@
 package com.project.toolbox.Service;
 
+import com.project.toolbox.Model.Role;
 import com.project.toolbox.Model.User;
 import com.project.toolbox.Repository.UserRepository;
+import com.project.toolbox.dto.RegisterRequest;
+import com.project.toolbox.exception.BadRequestException;
+import com.project.toolbox.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import java.util.List;
-import java.util.Optional;
-
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -20,29 +23,41 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    // Register a new user with encoded password
-    public User registerUser(User user) {
-        String rawPassword = user.getPassword(); // Get plain password
-        String encodedPassword = passwordEncoder.encode(rawPassword); // Encode it
-        user.setPasswordHash(encodedPassword); // Store encoded password in DB
+    public User registerUser(RegisterRequest request) {
+        if (userRepository.findByEmail(request.getEmail().trim().toLowerCase()).isPresent()) {
+            throw new BadRequestException("Email is already in use: " + request.getEmail());
+        }
+
+        User user = new User();
+        user.setName(request.getName().trim());
+        user.setEmail(request.getEmail().trim().toLowerCase());
+        user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
+        user.setPhone(request.getPhone());
+        user.setAddress(request.getAddress());
+        user.setRole(Role.USER);
         user.setCreatedAt(LocalDateTime.now());
+
         return userRepository.save(user);
     }
 
-    // Authenticate user by checking raw password against stored hash
     public User authenticate(String email, String rawPassword) {
-        return userRepository.findByEmail(email)
+        if (email == null || rawPassword == null) return null;
+        return userRepository.findByEmail(email.trim().toLowerCase())
                 .filter(user -> passwordEncoder.matches(rawPassword, user.getPasswordHash()))
                 .orElse(null);
     }
+
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
 
     public Optional<User> getUserByEmail(String email) {
-        return userRepository.findByEmail(email);
+        if (email == null) return Optional.empty();
+        return userRepository.findByEmail(email.trim().toLowerCase());
     }
-    public Optional<User> getUserById(Long id) {
-        return userRepository.findById(id);
+
+    public User getUserById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
     }
 }

@@ -26,6 +26,10 @@ private Tool tool;
 private Integer rating; 
 private String comment; 
 private LocalDateTime createdAt;
+
+public Review() {
+}
+
 public Review(Long id, User user, Tool tool, Integer rating, String comment, LocalDateTime createdAt) {
     this.id = id;
     this.user = user;
