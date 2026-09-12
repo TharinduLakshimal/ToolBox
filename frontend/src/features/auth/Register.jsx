@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import api from '../../api/axiosConfig';
 
 function Register() {
   const [name, setName] = useState('');
@@ -8,30 +8,37 @@ function Register() {
   const [password, setPassword] = useState('');
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
-  const [role, setRole] = useState('user');
-  const [errorMessage, setErrorMessage] = useState('');  // To handle error message
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
 
   const navigate = useNavigate();
 
   const handleRegister = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setErrorMessage('');
+    setSuccessMessage('');
+
     try {
-      // Send the registration request to backend
-      await axios.post('http://localhost:8080/api/auth/register', {
-        name,
-        email,
+      await api.post('/api/auth/register', {
+        name: name.trim(),
+        email: email.trim(),
         password,
-        phone,
-        address,
-        role: role.toUpperCase(),
+        phone: phone.trim(),
+        address: address.trim(),
       });
 
-      // If registration is successful, navigate to login page
-      alert('Registration successful!');
-      navigate('/login');
+      setSuccessMessage('Registration successful! Redirecting to login...');
+      setTimeout(() => {
+        navigate('/login');
+      }, 1500);
     } catch (err) {
-      // Handle errors, set error message to display to the user
-      setErrorMessage(err.response?.data?.message || 'Registration failed');
+      setErrorMessage(
+        err.extractedMessage || err.response?.data?.message || 'Registration failed. Please check the form.'
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -41,28 +48,29 @@ function Register() {
       <form onSubmit={handleRegister}>
         <input
           type="text"
-          placeholder="Name"
+          placeholder="Full Name"
           value={name}
           required
           onChange={(e) => setName(e.target.value)}
         />
         <input
           type="email"
-          placeholder="Email"
+          placeholder="Email Address"
           value={email}
           required
           onChange={(e) => setEmail(e.target.value)}
         />
         <input
           type="password"
-          placeholder="Password"
+          placeholder="Password (minimum 6 characters)"
           value={password}
           required
+          minLength={6}
           onChange={(e) => setPassword(e.target.value)}
         />
         <input
           type="text"
-          placeholder="Phone"
+          placeholder="Phone Number"
           value={phone}
           required
           onChange={(e) => setPhone(e.target.value)}
@@ -74,16 +82,28 @@ function Register() {
           required
           onChange={(e) => setAddress(e.target.value)}
         />
-        <select value={role} onChange={(e) => setRole(e.target.value)} required>
-          <option value="USER">User</option>
-          <option value="ADMIN">Admin</option>
-          <option value="OWNER">Tool Owner</option>
-        </select>
-        <button type="submit">Register</button>
+        <button type="submit" disabled={loading}>
+          {loading ? 'Creating account...' : 'Register'}
+        </button>
       </form>
 
-      {/* Display error message if registration fails */}
-      {errorMessage && <div className="error-message">{errorMessage}</div>}
+      {errorMessage && (
+        <div className="error-message" style={{ whiteSpace: 'pre-line' }}>
+          {errorMessage}
+        </div>
+      )}
+      {successMessage && (
+        <div className="success-message" style={{ color: '#16a34a', marginTop: '15px', fontWeight: 'bold' }}>
+          {successMessage}
+        </div>
+      )}
+
+      <p style={{ marginTop: '20px' }}>
+        Already have an account?{' '}
+        <Link to="/login" style={{ color: '#008cba', textDecoration: 'none' }}>
+          Login
+        </Link>
+      </p>
 
       <style>{`
         .register-page {
@@ -108,8 +128,7 @@ function Register() {
           gap: 15px;
         }
 
-        .register-page input,
-        .register-page select {
+        .register-page input {
           padding: 12px;
           font-size: 1rem;
           border: 1px solid #ccc;
@@ -117,8 +136,7 @@ function Register() {
           transition: 0.3s;
         }
 
-        .register-page input:focus,
-        .register-page select:focus {
+        .register-page input:focus {
           border-color: #3498db;
           outline: none;
           box-shadow: 0 0 6px rgba(52, 152, 219, 0.5);

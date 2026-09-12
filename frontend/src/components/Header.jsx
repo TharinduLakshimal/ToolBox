@@ -36,6 +36,19 @@ const Header = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  const syncAuthState = () => {
+    const token = localStorage.getItem('token');
+    const storedRole = localStorage.getItem('role');
+    setIsLoggedIn(!!token);
+    setRole(storedRole || '');
+  };
+
+  useEffect(() => {
+    syncAuthState();
+    window.addEventListener('authUpdated', syncAuthState);
+    return () => window.removeEventListener('authUpdated', syncAuthState);
+  }, []);
+
   useEffect(() => {
     window.addEventListener('cartUpdated', syncCartCount);
     return () => window.removeEventListener('cartUpdated', syncCartCount);

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import api from '../api/axiosConfig';
 import ProductCard from '../components/ProductCard';
 
 const categories = [
@@ -45,9 +45,9 @@ const Home = () => {
 
   const fetchAllTools = async () => {
     try {
-      const response = await axios.get('http://localhost:8080/api/tools/getTools');
-      setTools(response.data);
-      setFilteredTools(response.data);
+      const response = await api.get('/api/tools/getTools');
+      setTools(response.data || []);
+      setFilteredTools(response.data || []);
     } catch (error) {
       console.error('Error fetching tools:', error);
     }
@@ -61,8 +61,8 @@ const Home = () => {
       setFilteredTools(tools);
     } else {
       try {
-        const response = await axios.get(`http://localhost:8080/api/tools/search?keyword=${keyword}`);
-        setFilteredTools(response.data);
+        const response = await api.get(`/api/tools/search?keyword=${encodeURIComponent(keyword)}`);
+        setFilteredTools(response.data || []);
       } catch (error) {
         console.error('Search error:', error);
       }

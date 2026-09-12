@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
+import api from '../../api/axiosConfig';
 
 function Login() {
   const [email, setEmail] = useState('');
@@ -15,17 +15,21 @@ function Login() {
     setErrorMessage('');
 
     try {
-      const res = await axios.post('http://localhost:8080/api/auth/login', {
-        email,
+      const res = await api.post('/api/auth/login', {
+        email: email.trim(),
         password,
       });
 
-      if (res.data.token && res.data.role) {
+      if (res.data && res.data.token) {
         localStorage.setItem('token', res.data.token);
         localStorage.setItem('role', res.data.role);
-        localStorage.setItem('email', res.data.email); // optional
+        localStorage.setItem('email', res.data.email);
+        if (res.data.name) localStorage.setItem('name', res.data.name);
+        if (res.data.id) localStorage.setItem('userId', String(res.data.id));
 
         alert('Login successful!');
+        // Dispatch auth update event so Header immediately reflects the logged-in user
+        window.dispatchEvent(new Event('authUpdated'));
 
         if (res.data.role === 'ADMIN') {
           navigate('/admin');
@@ -36,7 +40,9 @@ function Login() {
         setErrorMessage('Login failed: Invalid response from server');
       }
     } catch (err) {
-      setErrorMessage(err.response?.data?.message || 'Login failed');
+      setErrorMessage(
+        err.extractedMessage || err.response?.data?.message || 'Login failed. Please check your credentials.'
+      );
     } finally {
       setLoading(false);
     }

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import api from '../../api/axiosConfig';
 
 const Cart = () => {
   const [cartItems, setCartItems] = useState([]);
@@ -50,27 +50,21 @@ const Cart = () => {
   };
 
   const handleCheckout = async () => {
-    if (!cartItems.length) {
+    if (cartItems.length === 0) {
       alert('Your cart is empty.');
       return;
     }
 
-    const email = localStorage.getItem('email');
-    if (!email) {
+    const token = localStorage.getItem('token');
+    if (!token) {
       alert('Please log in before checkout.');
       navigate('/login');
       return;
     }
 
     try {
-      const userResponse = await axios.get(
-        `http://localhost:8080/api/users/by-email?email=${encodeURIComponent(email)}`
-      );
-      const userId = userResponse.data.id;
-
       for (const item of cartItems) {
-        await axios.post('http://localhost:8080/api/rental/create', {
-          userId,
+        await api.post('/api/rental/create', {
           toolId: item.id,
           startDate: item.startDate,
           endDate: item.endDate,
@@ -82,10 +76,10 @@ const Cart = () => {
 
       clearCart();
       alert('Order confirmed!');
-      navigate('/');
+      navigate('/my-rentals');
     } catch (error) {
       console.error('Checkout failed:', error);
-      alert('Checkout failed. Please try again.');
+      alert(`Checkout failed: ${error.extractedMessage || error.response?.data?.message || 'Please try again.'}`);
     }
   };
 

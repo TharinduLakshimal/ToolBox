@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import api from '../../api/axiosConfig';
 
 function Account() {
   const [user, setUser] = useState(null);
@@ -10,26 +10,22 @@ function Account() {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    const email = localStorage.getItem('email');
-
-    if (!token || !email) {
+    if (!token) {
       setErrorMessage('You must be logged in to view this page.');
       setTimeout(() => navigate('/login'), 2000);
       return;
     }
 
-    axios
-      .get('http://localhost:8080/api/users/profile', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
+    api
+      .get('/api/users/profile')
       .then((response) => {
         setUser(response.data);
         setLoading(false);
       })
       .catch((err) => {
-        setErrorMessage(err.response?.data?.message || 'Could not load user data. Please log in again.');
+        setErrorMessage(
+          err.extractedMessage || err.response?.data?.message || 'Could not load user data. Please log in again.'
+        );
         setLoading(false);
         setTimeout(() => navigate('/login'), 2000);
       });
@@ -74,7 +70,15 @@ function Account() {
         <p><strong>Member Since:</strong> {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'}</p>
       </div>
       <p>
-        <button onClick={() => { localStorage.clear(); navigate('/login'); }}>Logout</button>
+        <button
+          onClick={() => {
+            localStorage.clear();
+            window.dispatchEvent(new Event('authUpdated'));
+            navigate('/login');
+          }}
+        >
+          Logout
+        </button>
       </p>
       <style>{styles}</style>
     </div>

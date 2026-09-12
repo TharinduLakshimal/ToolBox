@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../api/axiosConfig';
 
 const Rent = () => {
   const { id } = useParams();
@@ -11,7 +11,6 @@ const Rent = () => {
   const [totalPrice, setTotalPrice] = useState(0);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const currentUserId = 1;
 
   const addToCart = () => {
     if (!fromDate || !toDate || !quantity) {
@@ -49,8 +48,8 @@ const Rent = () => {
   };
 
   useEffect(() => {
-    axios
-      .get(`http://localhost:8080/api/tools/${id}`)
+    api
+      .get(`/api/tools/${id}`)
       .then((response) => {
         setTool(response.data);
       })
@@ -79,6 +78,13 @@ const Rent = () => {
   };
 
   const handleConfirm = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('❗ Please log in before creating a rental.');
+      navigate('/login');
+      return;
+    }
+
     if (!fromDate || !toDate || !quantity) {
       alert('❗ Please fill all fields.');
       return;
@@ -94,8 +100,7 @@ const Rent = () => {
 
     setLoading(true);
     try {
-      await axios.post('http://localhost:8080/api/rental/create', {
-        userId: currentUserId,
+      await api.post('/api/rental/create', {
         toolId: tool.id,
         startDate: fromDate,
         endDate: toDate,
@@ -107,9 +112,10 @@ const Rent = () => {
       setFromDate('');
       setToDate('');
       setQuantity(1);
+      navigate('/my-rentals');
     } catch (error) {
       console.error('Error:', error);
-      alert('❌ Failed to rent tool.');
+      alert(`❌ Failed to rent tool: ${error.extractedMessage || error.response?.data?.message || 'Server error'}`);
     } finally {
       setLoading(false);
     }
@@ -123,9 +129,10 @@ const Rent = () => {
     );
   }
 
-  const days = fromDate && toDate && new Date(toDate) >= new Date(fromDate)
-    ? Math.ceil((new Date(toDate) - new Date(fromDate)) / (1000 * 60 * 60 * 24)) + 1
-    : 0;
+  const days =
+    fromDate && toDate && new Date(toDate) >= new Date(fromDate)
+      ? Math.ceil((new Date(toDate) - new Date(fromDate)) / (1000 * 60 * 60 * 24)) + 1
+      : 0;
 
   return (
     <div style={{ background: 'linear-gradient(180deg, #f8fafc 0%, #eef6ff 100%)', minHeight: '100vh', padding: '32px 20px 60px' }}>

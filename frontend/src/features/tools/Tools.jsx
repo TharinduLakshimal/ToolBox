@@ -1,25 +1,48 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import api from '../../api/axiosConfig';
 import ProductCard from '../../components/ProductCard';
 
 const Tool = () => {
   const [tools, setTools] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get('http://localhost:8080/api/tools/getTools')
-      .then(response => {
+    api
+      .get('/api/tools/getTools')
+      .then((response) => {
         setTools(response.data);
       })
-      .catch(error => {
-        console.error("Error fetching tools:", error);
+      .catch((err) => {
+        console.error('Error fetching tools:', err);
+        setError(err.extractedMessage || 'Failed to load tools catalog.');
+      })
+      .finally(() => {
+        setLoading(false);
       });
   }, []);
 
   const handleRentClick = (id) => {
     navigate(`/rent/${id}`);
   };
+
+  if (loading) {
+    return (
+      <div style={{ padding: '60px 20px', textAlign: 'center', color: '#475569' }}>
+        Loading tools catalog...
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div style={{ padding: '60px 20px', textAlign: 'center', color: '#dc2626' }}>
+        {error}
+      </div>
+    );
+  }
 
   return (
     <div style={{ padding: '20px' }}>

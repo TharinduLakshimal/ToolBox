@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../../api/axiosConfig';
 import AdminSidebar from './AdminSidebar';
 
 const AdminDashboard = () => {
@@ -22,9 +22,9 @@ const AdminDashboard = () => {
   const [searchKeyword, setSearchKeyword] = useState('');
   const [categoryForm, setCategoryForm] = useState({ name: '', description: '' });
 
-  const apiUrl = 'http://localhost:8080/api/tools';
-  const rentalApiUrl = 'http://localhost:8080/api/rental';
-  const categoryApiUrl = 'http://localhost:8080/api/categories';
+  const apiUrl = '/api/tools';
+  const rentalApiUrl = '/api/rental';
+  const categoryApiUrl = '/api/categories';
 
   useEffect(() => {
     fetchTools();
@@ -33,21 +33,21 @@ const AdminDashboard = () => {
   }, []);
 
   const fetchTools = () => {
-    axios
+    api
       .get(`${apiUrl}/getTools`)
       .then((res) => setTools(res.data))
       .catch((err) => console.error('Fetch tools failed:', err));
   };
 
   const fetchRentals = () => {
-    axios
+    api
       .get(`${rentalApiUrl}/all`)
       .then((res) => setRentals(res.data))
       .catch((err) => console.error('Fetch rentals failed:', err));
   };
 
   const fetchCategories = () => {
-    axios
+    api
       .get(`${categoryApiUrl}/all`)
       .then((res) => setCategories(res.data))
       .catch((err) => console.error('Fetch categories failed:', err));
@@ -71,15 +71,21 @@ const AdminDashboard = () => {
     };
 
     const request = isEditing
-      ? axios.put(`${apiUrl}/update/${formData.id}`, data)
-      : axios.post(`${apiUrl}/add`, data);
+      ? api.put(`${apiUrl}/update/${formData.id}`, data)
+      : api.post(`${apiUrl}/add`, data);
 
     request
       .then(() => {
         resetForm();
         fetchTools();
       })
-      .catch(() => alert(`${isEditing ? 'Update' : 'Add'} failed`));
+      .catch((err) =>
+        alert(
+          `${isEditing ? 'Update' : 'Add'} failed: ${
+            err.extractedMessage || err.response?.data?.message || 'Server error'
+          }`
+        )
+      );
   };
 
   const handleEdit = (tool) => {
@@ -91,10 +97,16 @@ const AdminDashboard = () => {
 
   const handleDelete = (id) => {
     if (window.confirm('Are you sure you want to delete this tool?')) {
-      axios
+      api
         .delete(`${apiUrl}/delete/${id}`)
         .then(() => fetchTools())
-        .catch(() => alert('Delete failed'));
+        .catch((err) =>
+          alert(
+            `Delete failed: ${
+              err.extractedMessage || err.response?.data?.message || 'Server error'
+            }`
+          )
+        );
     }
   };
 
@@ -104,10 +116,16 @@ const AdminDashboard = () => {
       return;
     }
 
-    axios
-      .get(`${apiUrl}/search?keyword=${searchKeyword}`)
+    api
+      .get(`${apiUrl}/search?keyword=${encodeURIComponent(searchKeyword)}`)
       .then((res) => setTools(res.data))
-      .catch(() => alert('Search failed'));
+      .catch((err) =>
+        alert(
+          `Search failed: ${
+            err.extractedMessage || err.response?.data?.message || 'Server error'
+          }`
+        )
+      );
   };
 
   const handleCategoryChange = (e) => {
@@ -123,7 +141,7 @@ const AdminDashboard = () => {
       return;
     }
 
-    axios
+    api
       .post(`${categoryApiUrl}/add`, {
         name: categoryForm.name.trim(),
         description: categoryForm.description.trim(),
@@ -132,7 +150,13 @@ const AdminDashboard = () => {
         setCategoryForm({ name: '', description: '' });
         fetchCategories();
       })
-      .catch(() => alert('Failed to add category'));
+      .catch((err) =>
+        alert(
+          `Failed to add category: ${
+            err.extractedMessage || err.response?.data?.message || 'Server error'
+          }`
+        )
+      );
   };
 
   const resetForm = () => {
@@ -380,22 +404,34 @@ const AdminDashboard = () => {
             <tbody>
               {rentals.map((rental) => (
                 <tr key={rental.id} style={{ borderBottom: '1px solid #e2e8f0', background: '#fff' }}>
-                  <td style={tdStyle}>{rental.user?.username || 'User'}</td>
+                  <td style={tdStyle}>{rental.user?.name || rental.user?.email || 'User'}</td>
                   <td style={tdStyle}>{rental.tool?.name || 'Tool'}</td>
                   <td style={tdStyle}>{rental.startDate}</td>
                   <td style={tdStyle}>{rental.endDate}</td>
                   <td style={tdStyle}>Rs. {rental.totalAmount || rental.amount || 0}</td>
                   <td style={tdStyle}>{rental.quantity || 1}</td>
                   <td style={tdStyle}>
-                    <span style={{
-                      display: 'inline-block',
-                      padding: '7px 10px',
-                      borderRadius: '999px',
-                      background: rental.status === 'RETURNED' ? '#dcfce7' : rental.status === 'CANCELLED' ? '#fee2e2' : '#dbeafe',
-                      color: rental.status === 'RETURNED' ? '#166534' : rental.status === 'CANCELLED' ? '#991b1b' : '#1d4ed8',
-                      fontWeight: '800',
-                      fontSize: '12px',
-                    }}>
+                    <span
+                      style={{
+                        display: 'inline-block',
+                        padding: '7px 10px',
+                        borderRadius: '999px',
+                        background:
+                          rental.status === 'RETURNED'
+                            ? '#dcfce7'
+                            : rental.status === 'CANCELLED'
+                            ? '#fee2e2'
+                            : '#dbeafe',
+                        color:
+                          rental.status === 'RETURNED'
+                            ? '#166534'
+                            : rental.status === 'CANCELLED'
+                            ? '#991b1b'
+                            : '#1d4ed8',
+                        fontWeight: '800',
+                        fontSize: '12px',
+                      }}
+                    >
                       {rental.status}
                     </span>
                   </td>
@@ -403,7 +439,9 @@ const AdminDashboard = () => {
               ))}
               {rentals.length === 0 && (
                 <tr>
-                  <td colSpan="7" style={{ padding: '24px', textAlign: 'center', color: '#64748b' }}>No rental records found.</td>
+                  <td colSpan="7" style={{ padding: '24px', textAlign: 'center', color: '#64748b' }}>
+                    No rental records found.
+                  </td>
                 </tr>
               )}
             </tbody>
@@ -416,7 +454,11 @@ const AdminDashboard = () => {
   return (
     <div style={pageWrap}>
       <div style={dashboardShell}>
-        <AdminSidebar activeTab={activeTab} setActiveTab={setActiveTab} stats={{ tools: tools.length, categories: categories.length, rentals: rentals.length }} />
+        <AdminSidebar
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          stats={{ tools: tools.length, categories: categories.length, rentals: rentals.length }}
+        />
 
         <main style={contentArea}>
           {activeTab === 'tools' && renderToolsTab()}

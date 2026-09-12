@@ -1,35 +1,34 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import api from '../../api/axiosConfig';
 
 const MyRentals = () => {
   const [rentals, setRentals] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
 
   const fetchRentals = useCallback(async () => {
-    const email = localStorage.getItem('email');
-
-    if (!email) {
+    const token = localStorage.getItem('token');
+    if (!token) {
       navigate('/login');
       return;
     }
 
     try {
-      const userResponse = await axios.get(
-        `http://localhost:8080/api/users/by-email?email=${encodeURIComponent(email)}`
-      );
-
+      // Fetch authenticated user profile using token
+      const userResponse = await api.get('/api/users/profile');
       const userId = userResponse.data.id;
-      const rentalResponse = await axios.get(`http://localhost:8080/api/rental/user/${userId}`);
 
-      const activeRentals = rentalResponse.data.filter(
+      const rentalResponse = await api.get(`/api/rental/user/${userId}`);
+      const activeRentals = (rentalResponse.data || []).filter(
         (rental) => rental.status !== 'RETURNED' && rental.status !== 'CANCELLED'
       );
 
       setRentals(activeRentals);
     } catch (error) {
       console.error('Failed to fetch rentals:', error);
+      setErrorMessage(error.extractedMessage || error.response?.data?.message || 'Failed to fetch rentals.');
     } finally {
       setLoading(false);
     }
@@ -41,21 +40,21 @@ const MyRentals = () => {
 
   const handleExtend = async (rentalId, extraDays) => {
     try {
-      await axios.put(`http://localhost:8080/api/rental/${rentalId}/extend?days=${extraDays}`);
+      await api.put(`/api/rental/${rentalId}/extend?days=${extraDays}`);
       fetchRentals();
     } catch (error) {
       console.error('Failed to extend rental:', error);
-      alert('Failed to extend rental.');
+      alert(`Failed to extend rental: ${error.extractedMessage || error.response?.data?.message || 'Server error'}`);
     }
   };
 
   const handleReturn = async (rentalId) => {
     try {
-      await axios.put(`http://localhost:8080/api/rental/${rentalId}/return`);
+      await api.put(`/api/rental/${rentalId}/return`);
       fetchRentals();
     } catch (error) {
       console.error('Failed to return rental:', error);
-      alert('Failed to process return.');
+      alert(`Failed to process return: ${error.extractedMessage || error.response?.data?.message || 'Server error'}`);
     }
   };
 
@@ -63,6 +62,14 @@ const MyRentals = () => {
     return (
       <div style={{ padding: '60px 20px', textAlign: 'center', color: '#475569' }}>
         Loading your active rentals...
+      </div>
+    );
+  }
+
+  if (errorMessage) {
+    return (
+      <div style={{ padding: '60px 20px', textAlign: 'center', color: '#dc2626' }}>
+        {errorMessage}
       </div>
     );
   }
